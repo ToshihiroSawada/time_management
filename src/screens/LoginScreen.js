@@ -10,6 +10,10 @@ class LoginScreen extends React.Component {
     password: '',
   }
 
+  handleSubmit() {
+    this.props.navigation.navigate('Calendars');
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -35,12 +39,12 @@ class LoginScreen extends React.Component {
           secureTextEntry
           underlineColorAndroid="transparent" //AndroidのTextInputでに下線が出ないようにする設定(表示されなかったが一応入れておく)
         />
-        <TouchableHighlight style={styles.button} underlayColor="#f7f">
+        <TouchableHighlight style={styles.button} underlayColor="#f7f" onPress={this.handleSubmit.bind(this)}>
           <Text style={styles.buttonTitle}>ログインする</Text>
         </TouchableHighlight>
         {/*TouchableHighlightとTouchableOpacityの違いは細かい動作だけ大きくは変わらず、ただのボタン*/}
         <TouchableOpacity style={styles.signup}>
-          <Text style={styles.signupText}>メンバー登録する</Text>
+          {/* <Text style={styles.signupText}>メンバー登録する</Text> */}
         </TouchableOpacity>
       </View>
     );
