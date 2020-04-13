@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
 
 //カレンダーを使用するためにインポート
 import { Calendar, LocaleConfig } from 'react-native-calendars';
@@ -16,10 +16,17 @@ class CalendarScreen extends React.Component {
     };
     LocaleConfig.defaultLocale = 'ja';
 
+    console.log(Dimensions.get('screen').width);
     return (
       <View style={styles.container}>
         {/*カレンダーを出力・this.props.navigation.navigate('Results', { day })で日付データ(day)をResults画面に渡す*/}
-        <Calendar monthFormat="yyyy年 M月" onDayPress={(day) => { this.props.navigation.navigate('Results', { day }); }} />
+        <Calendar
+          monthFormat="yyyy年 M月"
+          onDayPress={(day) => {
+            this.props.navigation.navigate('Results', { day });
+            console.log(day);
+        }}
+        />
       </View>
     );
   }
