@@ -1,42 +1,51 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-
+import { StyleSheet, Text, View } from 'react-native';
 
 class Timezone extends React.Component {
+  renderView() {
+    // console.log('aaaaaaaaaaaaaaaa');
+  }
+
   render() {
-    if (this.props.timeItemList.time === '9:00') {
-      console.log('Yes!!!!');
-    }
-    console.log(this.props.timeItemList);
+    const array = [[this.props.timeItemList.time], [this.props.timeItemList.value]];
+    // console.log(array);
+    array.forEach((element) => {
+      console.log(element);
+      if (element == '9:00') {
+        console.log('Yes!!!!');
+      }
+    });
+    // console.log(this.props.timeItemList);
       return (
-        <ScrollView style={styles.container}>
-          <Text style={styles.text}>{this.props.timeItemList.time}</Text>
-          <Text style={styles.text}>1:00</Text>
-          <Text style={styles.text}>2:00</Text>
-          <Text style={styles.text}>3:00</Text>
-          <Text style={styles.text}>4:00</Text>
-          <Text style={styles.text}>5:00</Text>
-          <Text style={styles.text}>6:00</Text>
-          <Text style={styles.text}>7:00</Text>
-          <Text style={styles.text}>8:00</Text>
-          <Text style={styles.text}>9:00</Text>
-          <Text style={styles.text}>10:00</Text>
-          <Text style={styles.text}>11:00</Text>
-          <Text style={styles.text}>12:00</Text>
-          <Text style={styles.text}>13:00</Text>
-          <Text style={styles.text}>14:00</Text>
-          <Text style={styles.text}>15:00</Text>
-          <Text style={styles.text}>16:00</Text>
-          <Text style={styles.text}>17:00</Text>
-          <Text style={styles.text}>18:00</Text>
-          <Text style={styles.text}>19:00</Text>
-          <Text style={styles.text}>20:00</Text>
-          <Text style={styles.text}>21:00</Text>
-          <Text style={styles.text}>22:00</Text>
-          <Text style={styles.text}>23:00</Text>
-          <Text style={styles.text}>24:00</Text>
-        </ScrollView>
+        <View style={styles.container}>
+          {/* <Text style={styles.text}>{this.props.timeItemList.time}</Text> */}
+          <View style={styles.timeView}>
+            <Text style={styles.timeText}>0:00</Text>
+              <Text>aaaaaaaaa</Text>
+          </View>
+          {/* <View style={styles.timeView}>
+            <Text style={styles.timeText}>1:00</Text>
+          </View>
+          <View style={styles.timeView}>
+            <Text style={styles.timeText}>2:00</Text>
+          </View>
+          <View style={styles.timeView}>
+            <Text style={styles.timeText}>3:00</Text>
+          </View>
+          <View style={styles.timeView}>
+            <Text style={styles.timeText}>4:00</Text>
+          </View>
+          <View style={styles.timeView}>
+            <Text style={styles.timeText}>5:00</Text>
+          </View>
+          <View style={styles.timeView}>
+            <Text style={styles.timeText}>6:00</Text>
+          </View>
+          <View style={styles.timeView}>
+            <Text style={styles.timeText}>7:00</Text>
+          </View> */}
+          {this.renderView()}
+        </View>
       );
   }
 }
@@ -48,7 +57,10 @@ const styles = StyleSheet.create({
     height: '200%',
     width: '100%',
   },
-  text: {
+  timeText: {
+    fontSize: 20,
+  },
+  timeView: {
     width: '100%',
     height: 100,
     borderBottomWidth: 1,
