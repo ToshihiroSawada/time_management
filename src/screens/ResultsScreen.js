@@ -8,10 +8,23 @@ import Timezone from '../elements/Timezone';
 export default class ResultsScreen extends React.Component {
   state = {
     day: this.props.navigation.state.params.day.dateString,
-    data: {
-      time: '9:00',
-      value: '始業',
-    },
+    data: [
+      {
+        startTime: '9',
+        endTime: '9',
+        value: '始業',
+      },
+      {
+        startTime: '23',
+        endTime: '23',
+        value: '帰宅',
+      },
+      {
+        startTime: '10',
+        endTime: '13',
+        value: '会議',
+      },
+    ],
   };
 
   render() {
@@ -23,11 +36,11 @@ export default class ResultsScreen extends React.Component {
         <View style={styles.graph}>
           <View style={styles.graphView}>
             <Text>予定</Text>
-            <Timezone timeItemList={this.state.data} />
+            <Timezone timeItemList={this.state.data} id={console.log('aaaa')} />
           </View>
           <View style={styles.graphView}>
             <Text>結果</Text>
-            <Timezone timeItemList={this.state.data} />
+            <Timezone timeItemList={this.state.data} id={console.log('bbbbb')} />
           </View>
         </View>
       </ScrollView>
