@@ -24,6 +24,11 @@ export default class ResultsScreen extends React.Component {
         endTime: '13',
         value: '会議',
       },
+      {
+        startTime: '14',
+        endTime: '16',
+        value: '中休み',
+      },
     ],
   };
 
@@ -36,11 +41,11 @@ export default class ResultsScreen extends React.Component {
         <View style={styles.graph}>
           <View style={styles.graphView}>
             <Text>予定</Text>
-            <Timezone timeItemList={this.state.data} id={console.log('aaaa')} />
+            <Timezone timeItemList={this.state.data} id="aaaa" />
           </View>
           <View style={styles.graphView}>
             <Text>結果</Text>
-            <Timezone timeItemList={this.state.data} id={console.log('bbbbb')} />
+            <Timezone timeItemList={this.state.data} id="bbbbb" />
           </View>
         </View>
       </ScrollView>
@@ -52,7 +57,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    //alignItems: 'center',
   },
   dayText: {
     fontSize: 40,
