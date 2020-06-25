@@ -149,6 +149,18 @@
     levenary "^1.1.1"
     semver "^5.5.0"
 
+"@babel/helper-create-class-features-plugin@^7.10.3":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.10.3.tgz#2783daa6866822e3d5ed119163b50f0fc3ae4b35"
+  integrity sha512-iRT9VwqtdFmv7UheJWthGc/h2s7MqoweBF9RUj77NFZsg9VfISvBTum3k6coAhJ8RWv2tj3yUjA03HxPd0vfpQ==
+  dependencies:
+    "@babel/helper-function-name" "^7.10.3"
+    "@babel/helper-member-expression-to-functions" "^7.10.3"
+    "@babel/helper-optimise-call-expression" "^7.10.3"
+    "@babel/helper-plugin-utils" "^7.10.3"
+    "@babel/helper-replace-supers" "^7.10.1"
+    "@babel/helper-split-export-declaration" "^7.10.1"
+
 "@babel/helper-create-class-features-plugin@^7.8.3":
   version "7.9.5"
   resolved "https://registry.yarnpkg.com/@babel/helper-create-class-features-plugin/-/helper-create-class-features-plugin-7.9.5.tgz#79753d44017806b481017f24b02fd4113c7106ea"
@@ -249,6 +261,13 @@
   dependencies:
     "@babel/types" "^7.10.1"
 
+"@babel/helper-member-expression-to-functions@^7.10.3":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/helper-member-expression-to-functions/-/helper-member-expression-to-functions-7.10.3.tgz#bc3663ac81ac57c39148fef4c69bf48a77ba8dd6"
+  integrity sha512-q7+37c4EPLSjNb2NmWOjNwj0+BOyYlssuQ58kHEWk1Z78K5i8vTUsteq78HMieRPQSl/NtpQyJfdjt3qZ5V2vw==
+  dependencies:
+    "@babel/types" "^7.10.3"
+
 "@babel/helper-member-expression-to-functions@^7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/helper-member-expression-to-functions/-/helper-member-expression-to-functions-7.8.3.tgz#659b710498ea6c1d9907e0c73f206eee7dadc24c"
@@ -303,6 +322,13 @@
   dependencies:
     "@babel/types" "^7.10.1"
 
+"@babel/helper-optimise-call-expression@^7.10.3":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.10.3.tgz#f53c4b6783093195b0f69330439908841660c530"
+  integrity sha512-kT2R3VBH/cnSz+yChKpaKRJQJWxdGoc6SjioRId2wkeV3bK0wLLioFpJROrX0U4xr/NmxSSAWT/9Ih5snwIIzg==
+  dependencies:
+    "@babel/types" "^7.10.3"
+
 "@babel/helper-optimise-call-expression@^7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/helper-optimise-call-expression/-/helper-optimise-call-expression-7.8.3.tgz#7ed071813d09c75298ef4f208956006b6111ecb9"
@@ -314,6 +340,11 @@
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.8.3.tgz#9ea293be19babc0f52ff8ca88b34c3611b208670"
   integrity sha512-j+fq49Xds2smCUNYmEHF9kGNkhbet6yVIBp4e6oeQpH1RUs/Ir06xUKzDjDkGcaaokPiTNs2JBWHjaE4csUkZQ==
+
+"@babel/helper-plugin-utils@^7.10.1", "@babel/helper-plugin-utils@^7.10.3":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.10.3.tgz#aac45cccf8bc1873b99a85f34bceef3beb5d3244"
+  integrity sha512-j/+j8NAWUTxOtx4LKHybpSClxHoq6I91DQ/mKgAXn5oNUPIUiGppjPIX3TDtJWPrdfP9Kfl7e4fgVMiQR9VE/g==
 
 "@babel/helper-regex@^7.8.3":
   version "7.8.3"
@@ -672,6 +703,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.3"
 
+"@babel/plugin-syntax-typescript@^7.10.1":
+  version "7.10.1"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-typescript/-/plugin-syntax-typescript-7.10.1.tgz#5e82bc27bb4202b93b949b029e699db536733810"
+  integrity sha512-X/d8glkrAtra7CaQGMiGs/OGa6XgUzqPcBXCIGFCpCqnfGlT0Wfbzo/B89xHhnInTaItPK8LALblVXcUOEh95Q==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.10.1"
+
 "@babel/plugin-syntax-typescript@^7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-typescript/-/plugin-syntax-typescript-7.8.3.tgz#c1f659dda97711a569cef75275f7e15dcaa6cabc"
@@ -973,6 +1011,15 @@
     "@babel/helper-create-class-features-plugin" "^7.8.3"
     "@babel/helper-plugin-utils" "^7.8.3"
     "@babel/plugin-syntax-typescript" "^7.8.3"
+
+"@babel/plugin-transform-typescript@^7.5.0":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-typescript/-/plugin-transform-typescript-7.10.3.tgz#b3b35fb34ef0bd628b4b8329b0e5f985369201d4"
+  integrity sha512-qU9Lu7oQyh3PGMQncNjQm8RWkzw6LqsWZQlZPQMgrGt6s3YiBIaQ+3CQV/FA/icGS5XlSWZGwo/l8ErTyelS0Q==
+  dependencies:
+    "@babel/helper-create-class-features-plugin" "^7.10.3"
+    "@babel/helper-plugin-utils" "^7.10.3"
+    "@babel/plugin-syntax-typescript" "^7.10.1"
 
 "@babel/plugin-transform-unicode-regex@^7.0.0", "@babel/plugin-transform-unicode-regex@^7.8.3":
   version "7.8.3"
@@ -1425,10 +1472,10 @@
     query-string "^6.11.1"
     react-is "^16.13.0"
 
-"@react-navigation/native@^3.7.13":
-  version "3.7.13"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.7.13.tgz#5fdf879d5af40fb5bf751b6d932dd30656c9991e"
-  integrity sha512-M6v1bLz0WbQmlPKF3WKBEZDGQ3CaqmzQULGs7XWtQe+f03VEbeX+kCkr/J6hw+rsgAy9Nwr4mGCPPQhF2pa7Yw==
+"@react-navigation/native@^3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.8.0.tgz#35882c3fc2f997ea1a43c12a15088cf4c818fd92"
+  integrity sha512-Uym5XdNOTpTR6XC4IVa/Shfn12DUF3DUIqch+cpiLNfvauQukVmWoz+Rfxd2faGOzxT12EhrWGFsMJ/8nuTfcw==
   dependencies:
     hoist-non-react-statics "^3.3.2"
     react-native-safe-area-view "^0.14.9"
@@ -1865,15 +1912,15 @@ babel-plugin-syntax-trailing-function-commas@^7.0.0-beta.0:
   integrity sha512-Xj9XuRuz3nTSbaTXWv3itLOcxyF4oPD8douBBmj7U9BBC6nEBYfyOJYQMf/8PJAFotC62UY5dFfIGEPr7WswzQ==
 
 babel-preset-expo@^8.1.0:
-  version "8.2.1"
-  resolved "https://registry.yarnpkg.com/babel-preset-expo/-/babel-preset-expo-8.2.1.tgz#a5e20d67dc059b23aee57f093a5c05c7592e5e5a"
-  integrity sha512-2ghC+o8ljSH1vUv65dzGq6bNWvuqCFplkF9jESa6HzOCgATFoiOC9koeReE2/wXs7TxLZMVlZbtryJPRLbXwAg==
+  version "8.2.3"
+  resolved "https://registry.yarnpkg.com/babel-preset-expo/-/babel-preset-expo-8.2.3.tgz#0e2726f578287e1b0278674abc0933eba9a493e6"
+  integrity sha512-DL8GU7XsPPQFmDHYHo1/sTfNiXeThwSba4v3vOLbmkrzLetVGJruKMcKy7Vv0D1WmSpMvVj1J7G8C0IQ9pIDxQ==
   dependencies:
     "@babel/plugin-proposal-decorators" "^7.6.0"
     "@babel/preset-env" "^7.6.3"
     babel-plugin-module-resolver "^3.2.0"
     babel-plugin-react-native-web "^0.11.7"
-    metro-react-native-babel-preset "^0.56.0"
+    metro-react-native-babel-preset "^0.58.0"
 
 babel-preset-expo@~8.1.0:
   version "8.1.0"
@@ -4411,6 +4458,47 @@ metro-react-native-babel-preset@^0.56.0, metro-react-native-babel-preset@^0.56.4
     "@babel/template" "^7.0.0"
     react-refresh "^0.4.0"
 
+metro-react-native-babel-preset@^0.58.0:
+  version "0.58.0"
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.58.0.tgz#18f48d33fe124280ffabc000ab8b42c488d762a2"
+  integrity sha512-MRriNW+fF6jxABsgPphocUY6mIhmCm8idcrQZ58fT3Iti2vCdtkaK32TyCGUNUptzhUe2/cbE57j4aC+eaodAA==
+  dependencies:
+    "@babel/plugin-proposal-class-properties" "^7.0.0"
+    "@babel/plugin-proposal-export-default-from" "^7.0.0"
+    "@babel/plugin-proposal-nullish-coalescing-operator" "^7.0.0"
+    "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
+    "@babel/plugin-proposal-optional-catch-binding" "^7.0.0"
+    "@babel/plugin-proposal-optional-chaining" "^7.0.0"
+    "@babel/plugin-syntax-dynamic-import" "^7.0.0"
+    "@babel/plugin-syntax-export-default-from" "^7.0.0"
+    "@babel/plugin-syntax-flow" "^7.2.0"
+    "@babel/plugin-transform-arrow-functions" "^7.0.0"
+    "@babel/plugin-transform-block-scoping" "^7.0.0"
+    "@babel/plugin-transform-classes" "^7.0.0"
+    "@babel/plugin-transform-computed-properties" "^7.0.0"
+    "@babel/plugin-transform-destructuring" "^7.0.0"
+    "@babel/plugin-transform-exponentiation-operator" "^7.0.0"
+    "@babel/plugin-transform-flow-strip-types" "^7.0.0"
+    "@babel/plugin-transform-for-of" "^7.0.0"
+    "@babel/plugin-transform-function-name" "^7.0.0"
+    "@babel/plugin-transform-literals" "^7.0.0"
+    "@babel/plugin-transform-modules-commonjs" "^7.0.0"
+    "@babel/plugin-transform-object-assign" "^7.0.0"
+    "@babel/plugin-transform-parameters" "^7.0.0"
+    "@babel/plugin-transform-react-display-name" "^7.0.0"
+    "@babel/plugin-transform-react-jsx" "^7.0.0"
+    "@babel/plugin-transform-react-jsx-source" "^7.0.0"
+    "@babel/plugin-transform-regenerator" "^7.0.0"
+    "@babel/plugin-transform-runtime" "^7.0.0"
+    "@babel/plugin-transform-shorthand-properties" "^7.0.0"
+    "@babel/plugin-transform-spread" "^7.0.0"
+    "@babel/plugin-transform-sticky-regex" "^7.0.0"
+    "@babel/plugin-transform-template-literals" "^7.0.0"
+    "@babel/plugin-transform-typescript" "^7.5.0"
+    "@babel/plugin-transform-unicode-regex" "^7.0.0"
+    "@babel/template" "^7.0.0"
+    react-refresh "^0.4.0"
+
 metro-react-native-babel-transformer@^0.56.0:
   version "0.56.4"
   resolved "https://registry.yarnpkg.com/metro-react-native-babel-transformer/-/metro-react-native-babel-transformer-0.56.4.tgz#3c6e48b605c305362ee624e45ff338656e35fc1d"
@@ -5285,10 +5373,10 @@ react-is@^16.12.0, react-is@^16.13.0, react-is@^16.7.0, react-is@^16.8.1, react-
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-native-calendars@^1.299.0:
-  version "1.299.0"
-  resolved "https://registry.yarnpkg.com/react-native-calendars/-/react-native-calendars-1.299.0.tgz#184a373a5f97d58c1f44e051d26820f6a48ac7ee"
-  integrity sha512-AG5fvyElTh+V6bLo9MovgwFTKozUp1Uu/7hDAwweT40aQw/TlaX/lwK1ctR0+WzLgMLKfxLY/nQD1P/shctcPw==
+react-native-calendars@^1.300.0:
+  version "1.300.0"
+  resolved "https://registry.yarnpkg.com/react-native-calendars/-/react-native-calendars-1.300.0.tgz#ddd3941a0e01c9256a5aa0c44f615161bb9e664f"
+  integrity sha512-GOSaF+I24+cK5uxUfw85LEwskCj6Cpi5Cnm3OXdXexMer9hg0FlJ6AYlDrvu0ck0b9yAFdQTxExt64u1wkh+gw==
   dependencies:
     hoist-non-react-statics "^3.3.1"
     immutable "^4.0.0-rc.12"
@@ -5392,21 +5480,21 @@ react-native-web@^0.11.7:
     stacktrace-parser "^0.1.3"
     whatwg-fetch "^3.0.0"
 
-react-navigation-stack@^2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.7.0.tgz#290e8c054d7559d3980e2bff0869c5e7066a4d4f"
-  integrity sha512-EnPQqbhBwY6b53O3JBNCG38w5Z1/ZbTJ79OZsC2ukdAPlpF7pQ9+0m2BFLqtPTieeh4wBfYW4eX/DXgKEqkNOA==
+react-navigation-stack@^2.8.2:
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-2.8.2.tgz#e982bbf14a28b23c323b2d4a6fce4e9754b066e6"
+  integrity sha512-e1VtlF6NDdzgKmnqE3ucgizrgUWUakdT+r7htQU24iG8AJUFQEw+tH4Lfyj0St6i8/RLckXm+o9VgYJT+pNiRw==
   dependencies:
     color "^3.1.2"
     react-native-iphone-x-helper "^1.2.1"
 
-react-navigation@^4.3.9:
-  version "4.3.9"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-4.3.9.tgz#3b6a7224ac2ef6388593412c33aed6eacca10cbb"
-  integrity sha512-nqAHS7jL1hgFPZeYt1vU8zVuF2Ay3bVVdCYvJSFJ9UvQZOtqPr/Wen/Ya9fRc+AvTtf3+AJn97K8xIiz2HHusQ==
+react-navigation@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-4.4.0.tgz#c5523669df642aab23ff9e2ceb2109d3492a9374"
+  integrity sha512-BtxqNNlEGm/ve1mGHxCvrtvDzZ+2OF/V9OJaDPz/Cdx2VvYiFGaq6mtlFQm5/2bLxiEVXhNFcYSTCP26YGiENA==
   dependencies:
     "@react-navigation/core" "^3.7.6"
-    "@react-navigation/native" "^3.7.13"
+    "@react-navigation/native" "^3.8.0"
 
 react-refresh@^0.4.0:
   version "0.4.2"
