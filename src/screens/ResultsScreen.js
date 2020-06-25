@@ -41,7 +41,7 @@ export default class ResultsScreen extends React.Component {
         <View style={styles.graph}>
           <View style={styles.graphView}>
             <Text>予定</Text>
-            <Timezone timeItemList={this.state.data} id="aaaa" />
+            <Timezone timeItemList={this.state.data} id="aaaa" navigation={this.props.navigation} />
           </View>
           <View style={styles.graphView}>
             <Text>結果</Text>

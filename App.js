@@ -5,6 +5,7 @@ import { createAppContainer } from 'react-navigation'; //react-navigationのcrea
 import LoginScreen from './src/screens/LoginScreen';
 import CalendarScreen from './src/screens/CalendarScreen';
 import ResultScreen from './src/screens/ResultsScreen';
+import PlanEditScreen from './src/screens/PlanEditScreen';
 
 const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作成
   Login: {
@@ -15,6 +16,9 @@ const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作�
   },
   Results: {
     screen: ResultScreen,
+  },
+  PlanEdit: {
+    screen: PlanEditScreen,
   },
 }, { //画面を用意する部分の外(以下の部分)にdefaultNavigationOptionsを出すことによって、全画面共通のオプションを作成できる
   defaultNavigationOptions: {
@@ -30,6 +34,5 @@ const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作�
 });
 
 const App = createAppContainer(AppScreen); //AppScreenをcreateAppConteinerに入れて、コンテナ化
-
 
 export default App;
