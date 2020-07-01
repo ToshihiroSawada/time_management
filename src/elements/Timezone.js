@@ -6,30 +6,21 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class Timezone extends React.Component {
   render() {
-    console.log(this.props.timeItemList[1]);
-    const jsonToArray = [];
+    // console.log(this.props.timeItemList);
     const array = this.props.timeItemList;
-    //console.log(array);
+    console.log(array);
     //予定の個数を数えるカウンター
-    let planCounter = 0;
+    const planCounter = array.length;
     let key = 0;
-    //jsonをarrayに変換する
-    array.forEach((element) => {
-      jsonToArray.push(element.startTime);
-      jsonToArray.push(element.endTime);
-      jsonToArray.push(element.value);
-      planCounter += 2;
-    });
-    // console.log(jsonToArray);
     const viewStack = [];
     //arrayにデータが存在しているか確認する用のフラグ
     let arrayFlag = false;
     //24時間分の予定をスタックする
     for (let i = 0; i <= 24; i += 1) {
       let j = 0;
-      for (j = 0; j <= planCounter; j += 1) {
+      for (j = 0; j < planCounter; j += 1) {
         // eslint-disable-next-line eqeqeq
-        if (i == jsonToArray[j]) {
+        if (i == array[j].startTime) {
           arrayFlag = true;
           break;
         }
@@ -38,19 +29,19 @@ class Timezone extends React.Component {
       if (arrayFlag === true) {
         key += 1;
         viewStack.push(
-          <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('PlanEdit', jsonToArray[j + 2]); }}>
+          <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('PlanEdit', array[j].value); }}>
             <Text style={styles.timeText} key={key}>{i}:00</Text>
             <View style={styles.plan}>
-              <Text style={styles.matterText}>{jsonToArray[j + 2]}</Text>
+              <Text style={styles.matterText}>{array[j].value}</Text>
             </View>
           </TouchableOpacity>
         );
         //上記でpushしたArrayのstartTimeとendTimeが一致しない場合endTimeと一致するまでループ(Planの内容は同じ)
-        if (jsonToArray[j] !== jsonToArray[j + 1]) {
-          for (; i < jsonToArray[j + 1]; i += 1) {
+        if (array[j].startTime !== array[j].endTime) {
+          for (; i < array[j].endTime; i += 1) {
             //key += 1;
             viewStack.push(
-              <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('PlanEdit', jsonToArray[j + 2]); }}>
+              <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('PlanEdit', array[j].value); }}>
                 <Text style={styles.timeText} key={key}>{i + 1}:00</Text>
                 <View style={styles.plan}>
                   <Text style={styles.matterText}>〃</Text>
