@@ -34,7 +34,7 @@ class Timezone extends React.Component {
             <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('PlanEdit', array[j]); }}>
               <Text style={styles.timeText} key={key}>{i}:00</Text>
               <View style={[styles.plan, { backgroundColor: array[j].color }]}>
-                <Text style={styles.matterText}>{array[j].value}</Text>
+                <Text style={styles.matterText}>{array[j].title}</Text>
               </View>
             </TouchableOpacity>
           );
@@ -83,7 +83,7 @@ class Timezone extends React.Component {
             <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('PlanEdit', array[j]); }}>
               <Text style={styles.timeText} key={key}>{i}:00</Text>
               <View style={[styles.plan, { backgroundColor: array[j].color }]}>
-                <Text style={styles.matterText}>{array[j].value}</Text>
+                <Text style={styles.matterText}>{array[j].title}</Text>
               </View>
             </TouchableOpacity>
           );

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 
 class PlanEditScreen extends React.Component {
   render() {
@@ -14,8 +14,11 @@ class PlanEditScreen extends React.Component {
         <TouchableOpacity>
           <Text style={styles.endTimeText}>終了時刻： 【{plan.endTime}:00】</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.matterText}>予定： {plan.value}</Text>
+        <Text style={styles.matterText}>予定</Text>
+        <TextInput style={styles.title} placeholder="予定タイトル">{plan.title}</TextInput>
+        <TextInput style={styles.textBox} multiline placeholder="予定詳細">{plan.value}</TextInput>
+        <TouchableOpacity style={styles.okButton}>
+          <Text style={styles.okButtonText}>OK</Text>
         </TouchableOpacity>
       </View>
     );
@@ -37,6 +40,26 @@ const styles = StyleSheet.create({
   },
   matterText: {
     fontSize: 50,
+  },
+  textBox: {
+    fontSize: 20,
+    width: 300,
+    height: 200,
+    borderBottomColor: '#000',
+    backgroundColor: '#eee',
+  },
+  okButton: {
+    backgroundColor: '#f0f',
+    width: 75,
+    height: 50,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  okButtonText: {
+    fontSize: 25,
+    color: '#fff',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
 });
 
