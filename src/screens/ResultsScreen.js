@@ -23,16 +23,16 @@ export default class ResultsScreen extends React.Component {
         color: 'blue',
       },
       {
-        startTime: '10',
-        endTime: '13',
-        title: '会議',
-        color: 'green',
-      },
-      {
         startTime: '14',
         endTime: '16',
         title: '中休み',
         color: 'pink',
+      },
+      {
+        startTime: '10',
+        endTime: '13',
+        title: '会議',
+        color: 'green',
       },
     ],
     resultData: [
@@ -49,8 +49,8 @@ export default class ResultsScreen extends React.Component {
         color: 'blue',
       },
       {
-        startTime: '10',
-        endTime: '12',
+        startTime: '11',
+        endTime: '11',
         title: '会議',
         color: 'green',
       },
@@ -58,7 +58,7 @@ export default class ResultsScreen extends React.Component {
         startTime: '12',
         endTime: '13',
         title: '中休み',
-        color: 'black',
+        color: 'pink',
       },
     ],
   };

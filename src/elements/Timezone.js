@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable comma-dangle */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
@@ -7,33 +8,55 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 class Timezone extends React.Component {
   state = {
     array: this.props.timeItemList,
+    id: this.props.id,
   }
 
-  //ArrayのstartTimeとendTimeが一致する場合の処理
-  viewPush(viewStack, key, array, i, j) {
-    viewStack.push(
-      <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('PlanEdit', array[j]); }}>
-        <Text style={styles.timeText} key={key}>{i}:00</Text>
-        <View style={[styles.plan, { backgroundColor: array[j].color }]}>
-          <Text style={styles.matterText}>{array[j].title}</Text>
-        </View>
-      </TouchableOpacity>
-    );
+  //ViewをPushする処理
+  viewPush(viewStack, key, array, i, j, loopflag) {
+    // eslint-disable-next-line no-var
+    let destinationScreen;
+    if (this.state.id === 'Plan') {
+      destinationScreen = 'PlanEdit';
+    }
+    else {
+      destinationScreen = 'ResultEdit';
+    }
+    if (loopflag === true) {
+      viewStack.push(
+        <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, array[j]); }}>
+          <Text style={styles.timeText} key={key}>{i}:00</Text>
+          <View style={[styles.plan, { backgroundColor: array[j].color }]}>
+            <Text style={styles.matterText}>〃</Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+    else {
+      viewStack.push(
+        <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, array[j]); }}>
+          <Text style={styles.timeText} key={key}>{i}:00</Text>
+          <View style={[styles.plan, { backgroundColor: array[j].color }]}>
+            <Text style={styles.matterText}>{array[j].title}</Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
   }
 
-  //ArrayのstartTimeとendTimeが一致しない場合endTimeと一致するまでループ(Planの内容は同じ)
+  //同じ予定で何回Pushするのか判定する処理
   viewCreate(key, viewStack, array, i, j) {
-    // eslint-disable-next-line no-param-reassign
+    //ループ処理中か判断するフラグ
+    let loopflag = true;
     key += 1;
     this.viewPush(viewStack, key, array, i, j);
+    //ArrayのstartTimeとendTimeが一致しない場合の処理(endTimeと一致するまでループ(Planの内容は同じ))
     if (array[j].startTime !== array[j].endTime) {
-      // eslint-disable-next-line no-param-reassign
       i += 1;
-      // eslint-disable-next-line no-param-reassign
       for (; i < array[j].endTime; i += 1) {
-        this.viewPush(viewStack, key, array, i, j);
+        this.viewPush(viewStack, key, array, i, j, loopflag);
       }
-      this.viewPush(viewStack, key, array, i, j);
+      this.viewPush(viewStack, key, array, i, j, loopflag);
+      loopflag = false;
     }
     return [key, i, j];
   }
@@ -46,63 +69,30 @@ class Timezone extends React.Component {
     const viewStack = [];
     //予定が存在しているか確認する用のフラグ
     let planFlag = false;
-
-    //id名により分岐
-    //Plan側
-    if (this.props.id === 'Plan') {
-      //24時間分の予定をスタックする
-      for (let i = 0; i <= 24; i += 1) {
-        let j = 0;
-        for (j = 0; j < planCounter; j += 1) {
-          // eslint-disable-next-line eqeqeq
-          if (i == array[j].startTime) {
-            planFlag = true;
-            break;
-          }
+    //24時間分の予定をスタックする
+    for (let i = 0; i <= 24; i += 1) {
+      let j = 0;
+      for (j = 0; j < planCounter; j += 1) {
+        // eslint-disable-next-line eqeqeq
+        if (i == array[j].startTime) {
+          planFlag = true;
+          break;
         }
-        //フラグが立った場合Viewをpushする
-        if (planFlag === true) {
-          [key, i, j] = this.viewCreate(key, viewStack, array, i, j);
-        }
-        //フラグが立たなかった場合、時間のみ記述した空のViewをPushする
-        else {
-          key += 1;
-          viewStack.push(
-            <TouchableOpacity style={styles.timeView}>
-              <Text style={styles.timeText} key={key}>{i}:00</Text>
-            </TouchableOpacity>
-          );
-        }
-        planFlag = false;
       }
-    }
-    //Result側
-    else if (this.props.id === 'Result') {
-       //24時間分の予定をスタックする
-       for (let i = 0; i <= 24; i += 1) {
-        let j = 0;
-        for (j = 0; j < planCounter; j += 1) {
-          // eslint-disable-next-line eqeqeq
-          if (i == array[j].startTime) {
-            planFlag = true;
-            break;
-          }
-        }
-        //フラグが立った場合Viewをpushする
-        if (planFlag === true) {
-          [key, i, j] = this.viewCreate(key, viewStack, array, i, j);
-        }
-        //フラグが立たなかった場合、時間のみ記述した空のViewをPushする
-        else {
-          key += 1;
-          viewStack.push(
-            <TouchableOpacity style={styles.timeView}>
-              <Text style={styles.timeText} key={key}>{i}:00</Text>
-            </TouchableOpacity>
-          );
-        }
-        planFlag = false;
+      //フラグが立った場合Viewをpushする
+      if (planFlag === true) {
+        [key, i, j] = this.viewCreate(key, viewStack, array, i, j);
       }
+      //フラグが立たなかった場合、時間のみ記述した空のViewをPushする
+      else {
+        key += 1;
+        viewStack.push(
+          <TouchableOpacity style={styles.timeView}>
+            <Text style={styles.timeText} key={key}>{i}:00</Text>
+          </TouchableOpacity>
+        );
+      }
+      planFlag = false;
     }
     return (
       <View style={styles.container}>

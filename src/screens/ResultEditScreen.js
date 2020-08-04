@@ -8,15 +8,15 @@ class PlanEditScreen extends React.Component {
     const plan = this.props.navigation.state.params;
     return (
       <View style={styles.container}>
-        <TouchableOpacity>
+        <View>
           <Text style={styles.startTimeText}>開始時刻： 【{plan.startTime}:00】</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
+        </View>
+        <View>
           <Text style={styles.endTimeText}>終了時刻： 【{plan.endTime}:00】</Text>
-        </TouchableOpacity>
-        <Text style={styles.matterText}>予定タイトル</Text>
-        <TextInput style={styles.title} placeholder="タイトル入力">{plan.title}</TextInput>
-        <TextInput style={styles.textBox} multiline placeholder="予定詳細">{plan.value}</TextInput>
+        </View>
+        <Text style={styles.matterText}>予定</Text>
+        <TextInput style={styles.title} placeholder="タイトル">{plan.title}</TextInput>
+        <TextInput style={styles.textBox} multiline placeholder="詳細">{plan.value}</TextInput>
         <TouchableOpacity style={styles.okButton}>
           <Text style={styles.okButtonText}>OK</Text>
         </TouchableOpacity>
@@ -39,14 +39,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   matterText: {
-    marginTop: 50,
-    fontSize: 30,
-  },
-  title: {
-    width: 300,
-    height: 40,
-    fontSize: 30,
-    backgroundColor: '#aaa',
+    fontSize: 50,
   },
   textBox: {
     fontSize: 20,
