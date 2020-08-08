@@ -23,6 +23,7 @@ class Timezone extends React.Component {
     }
     if (loopflag === true) {
       viewStack.push(
+        // eslint-disable-next-line max-len
         <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, array[j]); }}>
           <Text style={styles.timeText} key={key}>{i}:00</Text>
           <View style={[styles.plan, { backgroundColor: array[j].color }]}>
@@ -33,6 +34,7 @@ class Timezone extends React.Component {
     }
     else {
       viewStack.push(
+        // eslint-disable-next-line max-len
         <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, array[j]); }}>
           <Text style={styles.timeText} key={key}>{i}:00</Text>
           <View style={[styles.plan, { backgroundColor: array[j].color }]}>

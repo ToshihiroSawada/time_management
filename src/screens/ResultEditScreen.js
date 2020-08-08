@@ -14,8 +14,9 @@ class PlanEditScreen extends React.Component {
         <View>
           <Text style={styles.endTimeText}>終了時刻： 【{plan.endTime}:00】</Text>
         </View>
-        <Text style={styles.matterText}>予定</Text>
+        <Text style={styles.titleText}>タイトル</Text>
         <TextInput style={styles.title} placeholder="タイトル">{plan.title}</TextInput>
+        <Text style={styles.titleText}>内容</Text>
         <TextInput style={styles.textBox} multiline placeholder="詳細">{plan.value}</TextInput>
         <TouchableOpacity style={styles.okButton}>
           <Text style={styles.okButtonText}>OK</Text>
@@ -38,20 +39,30 @@ const styles = StyleSheet.create({
   endTimeText: {
     fontSize: 30,
   },
-  matterText: {
-    fontSize: 50,
+  titleText: {
+    marginTop: 20,
+    fontSize: 30,
+    borderTopWidth: 1,
+  },
+  title: {
+    width: 300,
+    height: 40,
+    fontSize: 30,
+    backgroundColor: '#aaa',
   },
   textBox: {
+    marginTop: 10,
     fontSize: 20,
     width: 300,
     height: 200,
-    borderBottomColor: '#000',
+    borderBottomColor: '#aaa',
     backgroundColor: '#eee',
   },
   okButton: {
     backgroundColor: '#f0f',
     width: 75,
     height: 50,
+    marginTop: 10,
     justifyContent: 'center',
     alignSelf: 'center',
   },

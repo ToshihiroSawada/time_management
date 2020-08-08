@@ -6,7 +6,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import CalendarScreen from './src/screens/CalendarScreen';
 import ResultScreen from './src/screens/ResultsScreen';
 import PlanEditScreen from './src/screens/PlanEditScreen';
-import ResultEditScreen from './src/screens/ResultEditScreen'
+import ResultEditScreen from './src/screens/ResultEditScreen';
 
 const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作成
   Login: {
