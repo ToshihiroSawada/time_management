@@ -3,12 +3,23 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 
+import TimePicker from '../elements/DTS';
+
 class PlanEditScreen extends React.Component {
+  state = {
+    show: false,
+  }
+
+  handleSubmit() {
+    this.setState({ show: true });
+  }
+
   render() {
     const plan = this.props.navigation.state.params;
     return (
       <View style={styles.container}>
-        <TouchableOpacity>
+        {this.state.show && (<TimePicker />)}
+        <TouchableOpacity onPress={() => { this.handleSubmit(); }}>
           <Text style={styles.startTimeText}>開始時刻： 【{plan.startTime}:00】</Text>
         </TouchableOpacity>
         <TouchableOpacity>

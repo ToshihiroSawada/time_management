@@ -8,6 +8,8 @@ import ResultScreen from './src/screens/ResultsScreen';
 import PlanEditScreen from './src/screens/PlanEditScreen';
 import ResultEditScreen from './src/screens/ResultEditScreen';
 
+import DTS from './src/elements/DTS';
+
 const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作成
   Login: {
     screen: LoginScreen,
@@ -29,6 +31,9 @@ const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作�
       headerTitle: '結果編集画面',
     },
     screen: ResultEditScreen,
+  },
+  DTS: {
+    screen: DTS,
   },
 }, { //画面を用意する部分の外(以下の部分)にdefaultNavigationOptionsを出すことによって、全画面共通のオプションを作成できる
   defaultNavigationOptions: {
