@@ -1,9 +1,11 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
+import { StyleSheet, View, Text, KeyboardAvoidingView } from 'react-native';
+import { TouchableOpacity, TextInput, ScrollView } from 'react-native-gesture-handler';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DropDownPicker from 'react-native-dropdown-picker';
+import Icon from 'react-native-vector-icons/Feather';
 
 class PlanEditScreen extends React.Component {
   state = {
@@ -12,6 +14,7 @@ class PlanEditScreen extends React.Component {
     eTime: this.props.navigation.state.params.endTime,
     date: new Date(),
     mode: 'time',
+    startOrEnd: 'start',
   }
 
   onChange = (_event, selectedDate) => {
@@ -25,31 +28,52 @@ class PlanEditScreen extends React.Component {
     if (digitDetection < 10) {
       digitDetection = digitDetection.substring(1);
     }
-    this.setState({ sTime: digitDetection });
+
+    if (this.state.startOrEnd === 'start') {
+      this.setState({ sTime: digitDetection });
+    }
+    else {
+      this.setState({ eTime: digitDetection });
+    }
 
     //dateへ日本時間に変換してセットする
     this.setState({ date: currentDate });
   };
 
   //開始時刻と終了時刻をタップした際にTimePickerを表示する
-  handleSubmit() {
+  handleSubmit(startOrEnd) {
+    //sTimeかeTimeかどちらを変更するのか判別する為に、stateのstartOrEndを変更する
+    this.setState({ startOrEnd });
     this.setState({ show: true });
   }
 
   render() {
     const plan = this.props.navigation.state.params;
     return (
-      <View style={styles.container}>
-        <TouchableOpacity onPress={() => { this.handleSubmit(); }}>
+      <ScrollView style={styles.container}>
+        <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
           <Text style={styles.startTimeText}>開始時刻： 【{this.state.sTime}:00】</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => { this.handleSubmit(); }}>
+        <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
           <Text style={styles.endTimeText}>終了時刻： 【{this.state.eTime}:00】</Text>
         </TouchableOpacity>
-        <Text style={styles.titleText}>タイトル</Text>
-        <TextInput style={styles.title} placeholder="タイトル入力">{plan.title}</TextInput>
-        <Text style={styles.titleText}>内容</Text>
-        <TextInput style={styles.textBox} multiline placeholder="予定詳細">{plan.value}</TextInput>
+        <DropDownPicker
+          containerStyle={styles.dropDownPicker}
+          zIndex={200}
+          placeholder="色を選択"
+          items={[
+            { label: 'white', value: 'white', icon: () => <Icon name="box" size={18} color="white" /> },
+            { label: 'red', value: 'red', icon: () => <Icon name="box" size={18} color="red" /> },
+            { label: 'blue', value: 'blue', icon: () => <Icon name="box" size={18} color="blue" /> },
+            { label: 'green', value: 'green', icon: () => <Icon name="box" size={18} color="green" /> },
+          ]}
+        />
+        <Text style={styles.title}>タイトル</Text>
+        <TextInput style={styles.titleText} placeholder="タイトル入力">{plan.title}</TextInput>
+        <Text style={styles.title}>内容</Text>
+        <KeyboardAvoidingView behavior="padding">
+          <TextInput style={styles.textBox} multiline placeholder="予定詳細">{plan.value}</TextInput>
+        </KeyboardAvoidingView>
         <TouchableOpacity style={styles.okButton}>
           <Text style={styles.okButtonText}>OK</Text>
         </TouchableOpacity>
@@ -63,7 +87,7 @@ class PlanEditScreen extends React.Component {
             onChange={this.onChange}
           />
         )}
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -77,42 +101,57 @@ const styles = StyleSheet.create({
   },
   startTimeText: {
     fontSize: 30,
+    marginBottom: 5,
+    backgroundColor: '#f0fff0',
   },
   endTimeText: {
     fontSize: 30,
+    borderBottomWidth: 1,
+    paddingBottom: 5,
+    marginBottom: 10,
+    backgroundColor: '#f0fff0',
   },
-  titleText: {
+  dropDownPicker: {
+    width: 300,
+    height: 40,
+  },
+  title: {
     marginTop: 20,
     fontSize: 30,
     borderTopWidth: 1,
   },
-  title: {
+  titleText: {
     width: 300,
     height: 40,
     fontSize: 30,
-    backgroundColor: '#aaa',
+    backgroundColor: '#f0fff0',
   },
   textBox: {
     marginTop: 10,
     fontSize: 20,
     width: 300,
     height: 200,
-    borderBottomColor: '#aaa',
-    backgroundColor: '#eee',
+    borderBottomWidth: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    backgroundColor: '#f0fff0',
   },
   okButton: {
     backgroundColor: '#f0f',
     width: 75,
     height: 50,
     marginTop: 10,
+    marginBottom: 40,
     justifyContent: 'center',
     alignSelf: 'center',
   },
   okButtonText: {
     fontSize: 25,
     color: '#fff',
+    position: 'absolute',
     justifyContent: 'center',
     alignSelf: 'center',
+    zIndex: 100,
   },
 });
 
