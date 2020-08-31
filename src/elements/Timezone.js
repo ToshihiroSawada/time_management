@@ -13,6 +13,7 @@ class Timezone extends React.Component {
 
   //ViewをPushする処理
   viewPush(viewStack, key, array, i, j, loopflag) {
+    //destinationScreenにどこの画面に遷移するのかを格納する
     // eslint-disable-next-line no-var
     let destinationScreen;
     if (this.state.id === 'Plan') {
@@ -21,28 +22,23 @@ class Timezone extends React.Component {
     else {
       destinationScreen = 'ResultEdit';
     }
+
+    let textStack;
     if (loopflag === true) {
-      viewStack.push(
-        // eslint-disable-next-line max-len
-        <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, array[j]); }}>
-          <Text style={styles.timeText} key={key}>{i}:00</Text>
-          <View style={[styles.plan, { backgroundColor: array[j].color }]}>
-            <Text style={styles.matterText}>〃</Text>
-          </View>
-        </TouchableOpacity>
-      );
+      textStack = '〃';
     }
     else {
-      viewStack.push(
-        // eslint-disable-next-line max-len
-        <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, array[j]); }}>
-          <Text style={styles.timeText} key={key}>{i}:00</Text>
-          <View style={[styles.plan, { backgroundColor: array[j].color }]}>
-            <Text style={styles.matterText}>{array[j].title}</Text>
-          </View>
-        </TouchableOpacity>
-      );
+        textStack = array[j].title;
     }
+    viewStack.push(
+      // eslint-disable-next-line max-len
+      <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, array[j]); }}>
+        <Text style={styles.timeText} key={key}>{i}:00</Text>
+        <View style={[styles.plan, { backgroundColor: array[j].color }]}>
+          <Text style={styles.matterText}>{textStack}</Text>
+        </View>
+      </TouchableOpacity>
+    );
   }
 
   //同じ予定で何回Pushするのか判定する処理
