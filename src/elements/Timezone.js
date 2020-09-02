@@ -47,10 +47,10 @@ class Timezone extends React.Component {
     let loopflag = true;
     key += 1;
     this.viewPush(viewStack, key, array, i, j);
-    //ArrayのstartTimeとendTimeが一致しない場合の処理(endTimeと一致するまでループ(Planの内容は同じ))
-    if (array[j].startTime !== array[j].endTime) {
+    //ArrayのstartTimeHourとendTimeHourが一致しない場合の処理(endTimeHourと一致するまでループ(Planの内容は同じ))
+    if (array[j].startTimeHour !== array[j].endTimeHour) {
       i += 1;
-      for (; i < array[j].endTime; i += 1) {
+      for (; i < array[j].endTimeHour; i += 1) {
         this.viewPush(viewStack, key, array, i, j, loopflag);
       }
       this.viewPush(viewStack, key, array, i, j, loopflag);
@@ -70,10 +70,16 @@ class Timezone extends React.Component {
     //24時間分の予定をスタックする
     for (let i = 0; i <= 24; i += 1) {
       let j = 0;
-      for (j = 0; j < planCounter; j += 1) {
-        // eslint-disable-next-line eqeqeq
-        if (i == array[j].startTime) {
-          planFlag = true;
+      let k = 0;
+      for (k = 0; k < 60; k += 1) {
+        for (j = 0; j < planCounter; j += 1) {
+          // eslint-disable-next-line eqeqeq
+          if (i == array[j].startTimeHour && k == array[j].startTimeMinutes) {
+            planFlag = true;
+            break;
+          }
+        }
+        if (planFlag === true) {
           break;
         }
       }

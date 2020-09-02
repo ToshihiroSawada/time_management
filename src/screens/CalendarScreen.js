@@ -4,7 +4,6 @@ import { StyleSheet, View } from 'react-native';
 //カレンダーを使用するためにインポート
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 
-
 class CalendarScreen extends React.Component {
   render() {
     //カレンダーの表示形式を日本の表示形式に変更

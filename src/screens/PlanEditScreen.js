@@ -1,17 +1,23 @@
+/* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
-import { StyleSheet, View, Text, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, KeyboardAvoidingView } from 'react-native';
 import { TouchableOpacity, TextInput, ScrollView } from 'react-native-gesture-handler';
 
+//DateTimePickerをインポート
 import DateTimePicker from '@react-native-community/datetimepicker';
+
+//DropDownListを使用するためにDropDownPickerとIconをインポート
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
 class PlanEditScreen extends React.Component {
   state = {
     show: false,
-    sTime: this.props.navigation.state.params.startTime,
-    eTime: this.props.navigation.state.params.endTime,
+    startTimeHour: this.props.navigation.state.params.startTimeHour,
+    startTimeMinutes: this.props.navigation.state.params.endTimeHour,
+    endTimeMinutes: this.props.navigation.state.params.endTimeMinutes,
+    endTimeHour: this.props.navigation.state.params.endTimeHour,
     date: new Date(),
     mode: 'time',
     startOrEnd: 'start',
@@ -23,17 +29,21 @@ class PlanEditScreen extends React.Component {
     const currentDate = selectedDate || date;
 
     //時間の上2桁だけを抽出する。
-    let digitDetection = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(11, 13);
+    let hour = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(11, 13);
+    const minutes = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(14, 16);
+
     //時間が1桁(00〜09)だった場合、見た目を考慮して1桁表示とする
-    if (digitDetection < 10) {
-      digitDetection = digitDetection.substring(1);
+    if (hour < 10) {
+      hour = hour.substring(1);
     }
 
     if (this.state.startOrEnd === 'start') {
-      this.setState({ sTime: digitDetection });
+      this.setState({ startTimeHour: hour });
+      this.setState({ startTimeMinutes: minutes });
     }
     else {
-      this.setState({ eTime: digitDetection });
+      this.setState({ endTimeHour: hour });
+      this.setState({ endTimeMinutes: minutes });
     }
 
     //dateへ日本時間に変換してセットする
@@ -42,7 +52,7 @@ class PlanEditScreen extends React.Component {
 
   //開始時刻と終了時刻をタップした際にTimePickerを表示する
   handleSubmit(startOrEnd) {
-    //sTimeかeTimeかどちらを変更するのか判別する為に、stateのstartOrEndを変更する
+    //startTimeかendTimeかどちらを変更するのか判別する為に、stateのstartOrEndを変更する
     this.setState({ startOrEnd });
     this.setState({ show: true });
   }
@@ -52,10 +62,10 @@ class PlanEditScreen extends React.Component {
     return (
       <ScrollView style={styles.container}>
         <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
-          <Text style={styles.startTimeText}>開始時刻： 【{this.state.sTime}:00】</Text>
+          <Text style={styles.startTimeText}>開始時刻： 【{this.state.startTimeHour}:{this.state.startTimeMinutes}】</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
-          <Text style={styles.endTimeText}>終了時刻： 【{this.state.eTime}:00】</Text>
+          <Text style={styles.endTimeText}>終了時刻： 【{this.state.endTimeHour}:{this.state.endTimeMinutes}】</Text>
         </TouchableOpacity>
         <DropDownPicker
           containerStyle={styles.dropDownPicker}
@@ -132,8 +142,6 @@ const styles = StyleSheet.create({
     width: 300,
     height: 200,
     borderBottomWidth: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
     backgroundColor: '#f0fff0',
   },
   okButton: {
