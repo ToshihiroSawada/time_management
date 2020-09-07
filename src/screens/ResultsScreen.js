@@ -10,69 +10,53 @@ export default class ResultsScreen extends React.Component {
     day: this.props.navigation.state.params.day.dateString,
     planData: [
       {
-        startTimeHour: '9',
-        startTimeMinutes: '9',
-        endTimeHour: '9',
-        endTimeMinutes: '9',
+        startTime: '1599177830000',
+        endTime: '1599177830000',
         title: '始業',
         value: '仕事開始時間',
         color: 'red',
       },
       {
-        startTimeHour: '23',
-        startTimeMinutes: '9',
-        endTimeHour: '23',
-        endTimeMinutes: '9',
+        startTime: '1599228230000',
+        endTime: '1599228230000',
         title: '帰宅',
         color: 'blue',
       },
       {
-        startTimeHour: '14',
-        startTimeMinutes: '9',
-        endTimeHour: '16',
-        endTimeMinutes: '9',
+        startTime: '1599195830000',
+        endTime: '1599203030000',
         title: '中休み',
         color: 'pink',
       },
       {
-        startTimeHour: '10',
-        startTimeMinutes: '9',
-        endTimeHour: '13',
-        endTimeMinutes: '9',
+        startTime: '1599181430000',
+        endTime: '1599192230000',
         title: '会議',
         color: 'green',
       },
     ],
     resultData: [
       {
-        startTimeHour: '10',
-        startTimeMinutes: '9',
-        endTimeHour: '10',
-        endTimeMinutes: '9',
+        startTime: '1599181430000',
+        endTime: '1599181430000',
         title: '始業',
         color: 'red',
       },
       {
-        startTimeHour: '22',
-        startTimeMinutes: '9',
-        endTimeHour: '22',
-        endTimeMinutes: '9',
+        startTime: '1599224630000',
+        endTime: '1599224630000',
         title: '帰宅',
         color: 'blue',
       },
       {
-        startTimeHour: '11',
-        startTimeMinutes: '9',
-        endTimeHour: '11',
-        endTimeMinutes: '9',
+        startTime: '1599185030000',
+        endTime: '1599185030000',
         title: '会議',
         color: 'green',
       },
       {
-        startTimeHour: '12',
-        startTimeMinutes: '9',
-        endTimeHour: '13',
-        endTimeMinutes: '9',
+        startTime: '1599188630000',
+        endTime: '1599192230000',
         title: '中休み',
         color: 'pink',
       },
@@ -84,7 +68,8 @@ export default class ResultsScreen extends React.Component {
     const { day } = this.state;
     return (
       <ScrollView style={styles.container}>
-        <Text style={styles.dayText}>{day}</Text>
+        <Text style={styles.dayText}>{(`${day}-`).replace('-', '年').replace('-', '月').replace('-', '日')}</Text>
+        {/* <Text style={styles.dayText}>{day}</Text> */}
         <View style={styles.graph}>
           <View style={styles.graphView}>
             <Text>予定</Text>
@@ -106,7 +91,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   dayText: {
-    fontSize: 40,
+    fontSize: 35,
     alignSelf: 'center',
   },
   graph: {

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import { StyleSheet, View, Text, KeyboardAvoidingView } from 'react-native';
@@ -8,15 +9,23 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
 class ResultEditScreen extends React.Component {
+  state = {
+    startTime: this.props.navigation.state.params[0].startTime,
+    endTime: this.props.navigation.state.params[0].endTime,
+    title: this.props.navigation.state.params[0].title,
+    value: this.props.navigation.state.params[0].value,
+    color: this.props.navigation.state.params[0].color,
+  }
+
   render() {
-    const result = this.props.navigation.state.params;
+    const { state } = this;
     return (
       <ScrollView style={styles.container}>
         <View>
-          <Text style={styles.startTimeText}>開始時刻： 【{result.startTimeHour}:{result.startTimeMinutes}】</Text>
+          <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:00】</Text>
         </View>
         <View>
-          <Text style={styles.endTimeText}>終了時刻： 【{result.endTimeHour}:{result.startTimeMinutes}】</Text>
+          <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:00】</Text>
         </View>
         <DropDownPicker
           containerStyle={styles.dropDownPicker}
@@ -28,12 +37,13 @@ class ResultEditScreen extends React.Component {
             { label: 'blue', value: 'blue', icon: () => <Icon name="box" size={18} color="blue" /> },
             { label: 'green', value: 'green', icon: () => <Icon name="box" size={18} color="green" /> },
           ]}
+          defaultValue={this.state.color}
         />
         <Text style={styles.title}>タイトル</Text>
-        <TextInput style={styles.titleText} placeholder="タイトル入力">{result.title}</TextInput>
+        <TextInput style={styles.titleText} placeholder="タイトル入力">{state.title}</TextInput>
         <Text style={styles.title}>内容</Text>
         <KeyboardAvoidingView behavior="padding">
-          <TextInput style={styles.textBox} multiline placeholder="予定詳細">{result.value}</TextInput>
+          <TextInput style={styles.textBox} multiline placeholder="予定詳細">{state.value}</TextInput>
         </KeyboardAvoidingView>
         <TouchableOpacity style={styles.okButton} this>
           <Text style={styles.okButtonText}>OK</Text>

@@ -13,11 +13,12 @@ import Icon from 'react-native-vector-icons/Feather';
 
 class PlanEditScreen extends React.Component {
   state = {
+    startTime: this.props.navigation.state.params[0].startTime,
+    endTime: this.props.navigation.state.params[0].endTime,
+    title: this.props.navigation.state.params[0].title,
+    value: this.props.navigation.state.params[0].value,
+    color: this.props.navigation.state.params[0].color,
     show: false,
-    startTimeHour: this.props.navigation.state.params.startTimeHour,
-    startTimeMinutes: this.props.navigation.state.params.endTimeHour,
-    endTimeMinutes: this.props.navigation.state.params.endTimeMinutes,
-    endTimeHour: this.props.navigation.state.params.endTimeHour,
     date: new Date(),
     mode: 'time',
     startOrEnd: 'start',
@@ -28,9 +29,10 @@ class PlanEditScreen extends React.Component {
     const { date } = this.state;
     const currentDate = selectedDate || date;
 
-    //時間の上2桁だけを抽出する。
+    //時間の"時間"上2桁だけを抽出。
     let hour = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(11, 13);
-    const minutes = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(14, 16);
+    //時間の"分"だけを抽出。
+    // const minutes = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(14, 16);
 
     //時間が1桁(00〜09)だった場合、見た目を考慮して1桁表示とする
     if (hour < 10) {
@@ -38,12 +40,12 @@ class PlanEditScreen extends React.Component {
     }
 
     if (this.state.startOrEnd === 'start') {
-      this.setState({ startTimeHour: hour });
-      this.setState({ startTimeMinutes: minutes });
+      this.setState({ startTime: hour });
+      // this.setState({ startTimeMinutes: minutes });
     }
     else {
-      this.setState({ endTimeHour: hour });
-      this.setState({ endTimeMinutes: minutes });
+      this.setState({ endTime: hour });
+      // this.setState({ endTimeMinutes: minutes });
     }
 
     //dateへ日本時間に変換してセットする
@@ -58,14 +60,14 @@ class PlanEditScreen extends React.Component {
   }
 
   render() {
-    const plan = this.props.navigation.state.params;
+    const { state } = this;
     return (
       <ScrollView style={styles.container}>
         <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
-          <Text style={styles.startTimeText}>開始時刻： 【{this.state.startTimeHour}:{this.state.startTimeMinutes}】</Text>
+          <Text style={styles.startTimeText}>開始時刻： 【{this.state.startTime}:00】</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
-          <Text style={styles.endTimeText}>終了時刻： 【{this.state.endTimeHour}:{this.state.endTimeMinutes}】</Text>
+          <Text style={styles.endTimeText}>終了時刻： 【{this.state.endTime}:00】</Text>
         </TouchableOpacity>
         <DropDownPicker
           containerStyle={styles.dropDownPicker}
@@ -77,12 +79,13 @@ class PlanEditScreen extends React.Component {
             { label: 'blue', value: 'blue', icon: () => <Icon name="box" size={18} color="blue" /> },
             { label: 'green', value: 'green', icon: () => <Icon name="box" size={18} color="green" /> },
           ]}
+          defaultValue={this.state.color}
         />
         <Text style={styles.title}>タイトル</Text>
-        <TextInput style={styles.titleText} placeholder="タイトル入力">{plan.title}</TextInput>
+        <TextInput style={styles.titleText} placeholder="タイトル入力">{state.title}</TextInput>
         <Text style={styles.title}>内容</Text>
         <KeyboardAvoidingView behavior="padding">
-          <TextInput style={styles.textBox} multiline placeholder="予定詳細">{plan.value}</TextInput>
+          <TextInput style={styles.textBox} multiline placeholder="予定詳細">{state.value}</TextInput>
         </KeyboardAvoidingView>
         <TouchableOpacity style={styles.okButton}>
           <Text style={styles.okButtonText}>OK</Text>

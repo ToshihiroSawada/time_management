@@ -7,8 +7,36 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class Timezone extends React.Component {
   state = {
-    array: this.props.timeItemList,
+    array: [],
     id: this.props.id,
+  }
+
+  componentDidMount() {
+    const beforeConversion = this.props.timeItemList;
+    const planCounter = beforeConversion.length;
+    // eslint-disable-next-line global-require
+    const afterConversion = require('../function/TimestampToDate').timestampToDate(beforeConversion);
+    //startTimeとendTimeの"時"部分だけを取り出してarrayに挿入する
+    //また、時の2桁目が0だった場合は1桁のみ取り出す
+    for (let i = 0; i < planCounter; i += 1) {
+      // eslint-disable-next-line eqeqeq
+      if (afterConversion[i].startTime.substring(11, 12) == 0) {
+        afterConversion[i].startTime = afterConversion[i].startTime.substring(12, 13);
+      }
+      else {
+        afterConversion[i].startTime = afterConversion[i].startTime.substring(11, 13);
+      }
+
+      // eslint-disable-next-line eqeqeq
+      if (afterConversion[i].endTime.substring(11, 12) == 0) {
+        afterConversion[i].endTime = afterConversion[i].endTime.substring(12, 13);
+      }
+      else {
+        afterConversion[i].endTime = afterConversion[i].endTime.substring(11, 13);
+      }
+    }
+
+    this.setState({ array: afterConversion });
   }
 
   //ViewをPushする処理
@@ -30,9 +58,10 @@ class Timezone extends React.Component {
     else {
         textStack = array[j].title;
     }
+    const cache = [array[j], this.props.navigation.state.params.day.dateString];
     viewStack.push(
       // eslint-disable-next-line max-len
-      <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, array[j]); }}>
+      <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, cache); }}>
         <Text style={styles.timeText} key={key}>{i}:00</Text>
         <View style={[styles.plan, { backgroundColor: array[j].color }]}>
           <Text style={styles.matterText}>{textStack}</Text>
@@ -47,10 +76,10 @@ class Timezone extends React.Component {
     let loopflag = true;
     key += 1;
     this.viewPush(viewStack, key, array, i, j);
-    //ArrayのstartTimeHourとendTimeHourが一致しない場合の処理(endTimeHourと一致するまでループ(Planの内容は同じ))
-    if (array[j].startTimeHour !== array[j].endTimeHour) {
+    //ArrayのstartTimeとendTimeが一致しない場合の処理(endTimeと一致するまでループ(Planの内容は同じ))
+    if (array[j].startTime !== array[j].endTime) {
       i += 1;
-      for (; i < array[j].endTimeHour; i += 1) {
+      for (; i < array[j].endTime; i += 1) {
         this.viewPush(viewStack, key, array, i, j, loopflag);
       }
       this.viewPush(viewStack, key, array, i, j, loopflag);
@@ -67,19 +96,14 @@ class Timezone extends React.Component {
     const viewStack = [];
     //予定が存在しているか確認する用のフラグ
     let planFlag = false;
+
     //24時間分の予定をスタックする
     for (let i = 0; i <= 24; i += 1) {
       let j = 0;
-      let k = 0;
-      for (k = 0; k < 60; k += 1) {
-        for (j = 0; j < planCounter; j += 1) {
-          // eslint-disable-next-line eqeqeq
-          if (i == array[j].startTimeHour && k == array[j].startTimeMinutes) {
-            planFlag = true;
-            break;
-          }
-        }
-        if (planFlag === true) {
+      for (j = 0; j < planCounter; j += 1) {
+        // eslint-disable-next-line eqeqeq
+        if (i == array[j].startTime) {
+          planFlag = true;
           break;
         }
       }
