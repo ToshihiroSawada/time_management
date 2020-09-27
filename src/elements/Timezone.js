@@ -5,38 +5,40 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import firebase from 'firebase';
+
 class Timezone extends React.Component {
   state = {
     array: [],
     id: this.props.id,
   }
 
-  componentDidMount() {
-    const beforeConversion = this.props.timeItemList;
-    const planCounter = beforeConversion.length;
-    // eslint-disable-next-line global-require
-    const afterConversion = require('../function/TimestampToDate').timestampToDate(beforeConversion);
-    //startTimeとendTimeの"時"部分だけを取り出してarrayに挿入する
-    //また、時の2桁目が0だった場合は1桁のみ取り出す
-    for (let i = 0; i < planCounter; i += 1) {
-      // eslint-disable-next-line eqeqeq
-      if (afterConversion[i].startTime.substring(11, 12) == 0) {
-        afterConversion[i].startTime = afterConversion[i].startTime.substring(12, 13);
-      }
-      else {
-        afterConversion[i].startTime = afterConversion[i].startTime.substring(11, 13);
-      }
-
-      // eslint-disable-next-line eqeqeq
-      if (afterConversion[i].endTime.substring(11, 12) == 0) {
-        afterConversion[i].endTime = afterConversion[i].endTime.substring(12, 13);
-      }
-      else {
-        afterConversion[i].endTime = afterConversion[i].endTime.substring(11, 13);
-      }
+  async componentDidMount() {
+    const ParamsDay = this.props.navigation.state.params.day;
+    const year = ParamsDay.year.toString();
+    const month = ParamsDay.month.toString();
+    const day = ParamsDay.day.toString();
+    const { currentUser } = firebase.auth();
+    const db = firebase.firestore();
+    const { id } = this.state;
+    if (id === 'Plan') {
+      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).get().then((querySnapshot) => {
+        const planData = [];
+        querySnapshot.forEach((doc) => {
+            planData.push({ ...doc.data(), key: doc.id });
+        });
+        this.setState({ array: planData });
+      });
     }
-
-    this.setState({ array: afterConversion });
+    else {
+      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/results`).get().then((querySnapshot) => {
+        const resultData = [];
+        querySnapshot.forEach((doc) => {
+            resultData.push({ ...doc.data(), key: doc.id });
+        });
+        this.setState({ array: resultData });
+      });
+    }
   }
 
   //ViewをPushする処理
@@ -54,6 +56,7 @@ class Timezone extends React.Component {
     let textStack;
     if (loopflag === true) {
       textStack = '〃';
+      console.log('1');
     }
     else {
         textStack = array[j].title;
@@ -68,10 +71,12 @@ class Timezone extends React.Component {
         </View>
       </TouchableOpacity>
     );
+    console.log('viewPush');
   }
 
   //同じ予定で何回Pushするのか判定する処理
   viewCreate(key, viewStack, array, i, j) {
+    console.log(array[j].startTime);
     //ループ処理中か判断するフラグ
     let loopflag = true;
     key += 1;
@@ -85,26 +90,38 @@ class Timezone extends React.Component {
       this.viewPush(viewStack, key, array, i, j, loopflag);
       loopflag = false;
     }
+    console.log('viewCreate');
     return [key, i, j];
   }
 
   render() {
     const { array } = this.state;
+    let planCounter = 0;
     //予定の個数を数えるカウンター
-    const planCounter = array.length;
+    try {
+      planCounter = Object.keys(array).length;
+      // console.log(array);
+    }
+    catch (err) {
+      // console.log(err);
+    }
     let key = 0;
     const viewStack = [];
     //予定が存在しているか確認する用のフラグ
     let planFlag = false;
-
     //24時間分の予定をスタックする
     for (let i = 0; i <= 24; i += 1) {
       let j = 0;
       for (j = 0; j < planCounter; j += 1) {
-        // eslint-disable-next-line eqeqeq
-        if (i == array[j].startTime) {
-          planFlag = true;
-          break;
+        try {
+          // eslint-disable-next-line eqeqeq
+          if (i == array[j].startTime) {
+            planFlag = true;
+            break;
+          }
+        }
+        catch (err) {
+          console.log('ERROR:', err);
         }
       }
       //フラグが立った場合Viewをpushする

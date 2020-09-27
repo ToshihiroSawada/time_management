@@ -8,59 +8,8 @@ import Timezone from '../elements/Timezone';
 export default class ResultsScreen extends React.Component {
   state = {
     day: this.props.navigation.state.params.day.dateString,
-    planData: [
-      {
-        startTime: '1599177830000',
-        endTime: '1599177830000',
-        title: '始業',
-        value: '仕事開始時間',
-        color: 'red',
-      },
-      {
-        startTime: '1599228230000',
-        endTime: '1599228230000',
-        title: '帰宅',
-        color: 'blue',
-      },
-      {
-        startTime: '1599195830000',
-        endTime: '1599203030000',
-        title: '中休み',
-        color: 'pink',
-      },
-      {
-        startTime: '1599181430000',
-        endTime: '1599192230000',
-        title: '会議',
-        color: 'green',
-      },
-    ],
-    resultData: [
-      {
-        startTime: '1599181430000',
-        endTime: '1599181430000',
-        title: '始業',
-        color: 'red',
-      },
-      {
-        startTime: '1599224630000',
-        endTime: '1599224630000',
-        title: '帰宅',
-        color: 'blue',
-      },
-      {
-        startTime: '1599185030000',
-        endTime: '1599185030000',
-        title: '会議',
-        color: 'green',
-      },
-      {
-        startTime: '1599188630000',
-        endTime: '1599192230000',
-        title: '中休み',
-        color: 'pink',
-      },
-    ],
+    planData: [],
+    resultData: [],
   };
 
   render() {

@@ -1,18 +1,48 @@
 import { createStackNavigator } from 'react-navigation-stack'; //react-navigation-stackのcreateStackNavigatorをインポート
 import { createAppContainer } from 'react-navigation'; //react-navigationのcreateAppContainerをインポート
 
+import firebase from 'firebase';
+//firebaseのバージョン7.9.0以降下記のインポートを行わないと、firebaseと通信が行えなくなった
+import { decode, encode } from 'base-64';
+
 //それぞれの画面をインポート
 import LoginScreen from './src/screens/LoginScreen';
 import CalendarScreen from './src/screens/CalendarScreen';
 import ResultScreen from './src/screens/ResultsScreen';
 import PlanEditScreen from './src/screens/PlanEditScreen';
 import ResultEditScreen from './src/screens/ResultEditScreen';
+import Signup from './src/screens/SignupScreen';
+
+import ENV from './env.json';
+
+//firebaseのバージョン7.9.0以降のatob、btoaのwarningの対策
+if (!global.btoa) { global.btoa = encode; }
+if (!global.atob) { global.atob = decode; }
+
+// eslint-disable-next-line
+require("firebase/firestore");
+
+//Login(firebaseの準備)
+const firebaseConfig = {
+  apiKey: ENV.FIREBASE_API_KEY,
+  authDomain: ENV.FIREBASE_AUTH_DOMAIN,
+  databaseURL: ENV.FIREBASE_DB_URL,
+  projectId: ENV.FIREBASE_PRJ_ID,
+  storageBucket: ENV.FIREBASE_STORAGE,
+  messagingSenderId: ENV.FIREBASE_MS_SENDER_ID,
+  appId: ENV.FIREBASE_APP_ID,
+  measurementId: ENV.FIREBASE_MSM_ID,
+};
+firebase.initializeApp(firebaseConfig); //firebaseを初期化して準備する
 
 const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作成
   Login: {
     screen: LoginScreen,
   },
-  Calendars: {
+  Signup: {
+    screen: Signup,
+  },
+  Home: {
     screen: CalendarScreen,
   },
   Results: {
