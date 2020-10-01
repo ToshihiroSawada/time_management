@@ -4,10 +4,7 @@
 ※現在開発中
 
 <h1>使用方法(Usage)</h1>
-<<<<<<< HEAD
 
-=======
->>>>>>> 2nd
 ```bash
 $ sudo apt-get install nodejs npm
 $ npm install
@@ -18,5 +15,5 @@ $ expo start
 env.json.sample  
 ↓変更(change)
 env.json  
-  
+
 env.jsonにFirebaseで作成したアプリのIDを登録してください。  
