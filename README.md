@@ -4,7 +4,10 @@
 ※現在開発中
 
 <h1>使用方法(Usage)</h1>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2nd
 ```bash
 $ sudo apt-get install nodejs npm
 $ npm install
