@@ -13,12 +13,10 @@ export default class ResultsScreen extends React.Component {
   };
 
   render() {
-    //CalendarScreenから渡されたday(日付情報)を格納
     const { day } = this.state;
     return (
       <ScrollView style={styles.container}>
         <Text style={styles.dayText}>{(`${day}-`).replace('-', '年').replace('-', '月').replace('-', '日')}</Text>
-        {/* <Text style={styles.dayText}>{day}</Text> */}
         <View style={styles.graph}>
           <View style={styles.graphView}>
             <Text>予定</Text>

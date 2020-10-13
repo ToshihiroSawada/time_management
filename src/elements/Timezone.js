@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 /* eslint-disable comma-dangle */
 /* eslint-disable react/jsx-one-expression-per-line */
@@ -11,9 +13,21 @@ class Timezone extends React.Component {
   state = {
     array: [],
     id: this.props.id,
+    year: 0,
+    month: 0,
+    day: 0,
+    flag: false,
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.viewUpdate();
+  }
+
+  returnPlan() {
+    this.viewUpdate();
+  }
+
+  async viewUpdate() {
     const ParamsDay = this.props.navigation.state.params.day;
     const year = ParamsDay.year.toString();
     const month = ParamsDay.month.toString();
@@ -27,6 +41,7 @@ class Timezone extends React.Component {
         querySnapshot.forEach((doc) => {
             planData.push({ ...doc.data(), key: doc.id });
         });
+        console.log(planData);
         this.setState({ array: planData });
       });
     }
@@ -56,12 +71,16 @@ class Timezone extends React.Component {
     let textStack;
     if (loopflag === true) {
       textStack = '〃';
-      console.log('1');
     }
     else {
         textStack = array[j].title;
     }
-    const cache = [array[j], this.props.navigation.state.params.day.dateString];
+    const { state } = this;
+    const { year } = state;
+    const { month } = state;
+    const { day } = state;
+    //PlanEditScreenとResultEditScreenへ受け渡すデータをひとまとめにする
+    const cache = [array[j], this.props.navigation.state.params.day.dateString, { year, month, day }, this.returnPlan.bind(this)];
     viewStack.push(
       // eslint-disable-next-line max-len
       <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, cache); }}>
@@ -71,12 +90,10 @@ class Timezone extends React.Component {
         </View>
       </TouchableOpacity>
     );
-    console.log('viewPush');
   }
 
   //同じ予定で何回Pushするのか判定する処理
   viewCreate(key, viewStack, array, i, j) {
-    console.log(array[j].startTime);
     //ループ処理中か判断するフラグ
     let loopflag = true;
     key += 1;
@@ -90,20 +107,23 @@ class Timezone extends React.Component {
       this.viewPush(viewStack, key, array, i, j, loopflag);
       loopflag = false;
     }
-    console.log('viewCreate');
     return [key, i, j];
   }
 
   render() {
     const { array } = this.state;
+    const ParamsDay = this.props.navigation.state.params.day;
+    const year = ParamsDay.year.toString();
+    const month = ParamsDay.month.toString();
+    const day = ParamsDay.day.toString();
+
     let planCounter = 0;
     //予定の個数を数えるカウンター
     try {
       planCounter = Object.keys(array).length;
-      // console.log(array);
     }
     catch (err) {
-      // console.log(err);
+      console.log('ERROR', err);
     }
     let key = 0;
     const viewStack = [];
@@ -114,6 +134,13 @@ class Timezone extends React.Component {
       let j = 0;
       for (j = 0; j < planCounter; j += 1) {
         try {
+          if (array[j].startTime.match(/:/) !== null) {
+            let cacheArray = array[j].startTime.toString().split(':');
+            array[j].startTime = cacheArray[0];
+            cacheArray = array[j].endTime.toString().split(':');
+            array[j].endTime = cacheArray[0];
+            console.log(this.state);
+          }
           // eslint-disable-next-line eqeqeq
           if (i == array[j].startTime) {
             planFlag = true;
@@ -130,9 +157,18 @@ class Timezone extends React.Component {
       }
       //フラグが立たなかった場合、時間のみ記述した空のViewをPushする
       else {
+        //destinationScreenにどこの画面に遷移するのかを格納する
+        // eslint-disable-next-line no-unused-vars
+        let destinationScreen;
+        if (this.state.id === 'Plan') {
+          destinationScreen = 'PlanEdit';
+        }
+        else {
+          destinationScreen = 'ResultEdit';
+        }
         key += 1;
         viewStack.push(
-          <TouchableOpacity style={styles.timeView}>
+          <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, [i, 'newPlan', { year, month, day }, this.returnPlan.bind(this)]); }}>
             <Text style={styles.timeText} key={key}>{i}:00</Text>
           </TouchableOpacity>
         );

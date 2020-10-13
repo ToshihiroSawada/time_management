@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import React from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableHighlight } from 'react-native';
 import firebase from 'firebase';
@@ -36,8 +37,8 @@ class LoginScreen extends React.Component {
 
   //ログイン機能の実装
   handleSubmit() {
-    if (this.state.email === null || this.state.password === null) {
-    }
+    // eslint-disable-next-line no-empty
+    if (this.state.email === null || this.state.password === null) {}
     else {
       this.setState({ isLoading: true });
       firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)

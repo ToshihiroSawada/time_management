@@ -1,7 +1,8 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
-import { StyleSheet, Text, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, KeyboardAvoidingView, View } from 'react-native';
 import { TouchableOpacity, TextInput, ScrollView } from 'react-native-gesture-handler';
 
 //DateTimePickerをインポート
@@ -11,10 +12,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
+import firebase from 'firebase';
+
 class PlanEditScreen extends React.Component {
   state = {
     startTime: this.props.navigation.state.params[0].startTime,
+    startTimeMinutes: '00',
     endTime: this.props.navigation.state.params[0].endTime,
+    endTimeMinutes: '00',
     title: this.props.navigation.state.params[0].title,
     value: this.props.navigation.state.params[0].value,
     color: this.props.navigation.state.params[0].color,
@@ -22,17 +27,37 @@ class PlanEditScreen extends React.Component {
     date: new Date(),
     mode: 'time',
     startOrEnd: 'start',
+    errorMessage: [],
+  }
+
+  componentDidMount() {
+    //startTime・endTimeどちらかでもundifinedだった場合見栄を考慮し0にする
+    if (this.state.startTime === undefined || this.state.endTime === undefined) {
+      this.setState({ startTime: 0 });
+      this.setState({ endTime: 0 });
+    }
+
+    //新しく作成する場合の処理(idで判別し、startTime・endTimeにTimeZoneでタップした時間を入れる)
+    const { params } = this.props.navigation.state;
+    try {
+      if (params[1] === 'newPlan') {
+        this.setState({ startTime: params[0] });
+        this.setState({ endTime: params[0] });
+      }
+    }
+    catch (err) {
+      console.log('ERROR:', err);
+    }
   }
 
   onChange = (_event, selectedDate) => {
     this.setState({ show: false });
-    const { date } = this.state;
-    const currentDate = selectedDate || date;
+    const currentDate = selectedDate;
 
     //時間の"時間"上2桁だけを抽出。
     let hour = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(11, 13);
     //時間の"分"だけを抽出。
-    // const minutes = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(14, 16);
+    const minutes = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(14, 16);
 
     //時間が1桁(00〜09)だった場合、見た目を考慮して1桁表示とする
     if (hour < 10) {
@@ -41,11 +66,11 @@ class PlanEditScreen extends React.Component {
 
     if (this.state.startOrEnd === 'start') {
       this.setState({ startTime: hour });
-      // this.setState({ startTimeMinutes: minutes });
+      this.setState({ startTimeMinutes: minutes });
     }
     else {
       this.setState({ endTime: hour });
-      // this.setState({ endTimeMinutes: minutes });
+      this.setState({ endTimeMinutes: minutes });
     }
 
     //dateへ日本時間に変換してセットする
@@ -59,15 +84,59 @@ class PlanEditScreen extends React.Component {
     this.setState({ show: true });
   }
 
+  async updatePlan() {
+    //データ格納に使用する日付データを取得
+    const date = this.props.navigation.state.params[2];
+    const { year } = date;
+    const { month } = date;
+    const { day } = date;
+
+    const { state } = this;
+    //DB格納用にデータを編集
+    const addDBStartTime = `${state.startTime}:${state.startTimeMinutes}`;
+    const addDBEndTime = `${state.endTime}:${state.endTimeMinutes}`;
+    const { currentUser } = firebase.auth();
+    const db = firebase.firestore();
+    if (state.value === undefined) {
+      this.setState({ value: '' });
+    }
+    if (state.color === undefined) {
+      this.setState({ color: 'white' });
+    }
+
+    if (state.title === undefined) {
+      const errorMessage = [];
+      errorMessage.push(
+        <View>
+          <Text>タイトルを入力してください</Text>
+        </View>
+      );
+      this.setState({ errorMessage });
+    }
+    db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).add({
+      startTime: addDBStartTime,
+      endTime: addDBEndTime,
+      title: state.title,
+      value: state.value,
+      color: state.color,
+    })
+      .then(() => {
+        this.props.navigation.goBack();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   render() {
     const { state } = this;
     return (
       <ScrollView style={styles.container}>
         <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
-          <Text style={styles.startTimeText}>開始時刻： 【{this.state.startTime}:00】</Text>
+          <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
-          <Text style={styles.endTimeText}>終了時刻： 【{this.state.endTime}:00】</Text>
+          <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
         </TouchableOpacity>
         <DropDownPicker
           containerStyle={styles.dropDownPicker}
@@ -80,14 +149,27 @@ class PlanEditScreen extends React.Component {
             { label: 'green', value: 'green', icon: () => <Icon name="box" size={18} color="green" /> },
           ]}
           defaultValue={this.state.color}
+          onChangeItem={(item) => { this.setState({ color: item.value }); }}
         />
+        { this.state.errorMessage }
         <Text style={styles.title}>タイトル</Text>
-        <TextInput style={styles.titleText} placeholder="タイトル入力">{state.title}</TextInput>
+        <TextInput
+          style={styles.titleText}
+          placeholder="タイトル入力"
+          value={state.title}
+          onChangeText={(text) => { this.setState({ title: text }); }}
+        />
         <Text style={styles.title}>内容</Text>
         <KeyboardAvoidingView behavior="padding">
-          <TextInput style={styles.textBox} multiline placeholder="予定詳細">{state.value}</TextInput>
+          <TextInput
+            style={styles.textBox}
+            multiline
+            placeholder="予定詳細"
+            value={state.value}
+            onChangeText={(text) => { this.setState({ value: text }); }}
+          />
         </KeyboardAvoidingView>
-        <TouchableOpacity style={styles.okButton}>
+        <TouchableOpacity style={styles.okButton} onPress={this.updatePlan.bind(this)}>
           <Text style={styles.okButtonText}>OK</Text>
         </TouchableOpacity>
         {this.state.show && (
