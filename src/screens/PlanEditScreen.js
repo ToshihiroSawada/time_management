@@ -4,6 +4,7 @@
 import React from 'react';
 import { StyleSheet, Text, KeyboardAvoidingView, View } from 'react-native';
 import { TouchableOpacity, TextInput, ScrollView } from 'react-native-gesture-handler';
+import firebase from 'firebase';
 
 //DateTimePickerをインポート
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -12,10 +13,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
-import firebase from 'firebase';
+import Loading from '../elements/Loading';
 
 class PlanEditScreen extends React.Component {
   state = {
+    key: this.props.navigation.state.params[0].key,
     startTime: this.props.navigation.state.params[0].startTime,
     startTimeMinutes: '00',
     endTime: this.props.navigation.state.params[0].endTime,
@@ -28,6 +30,7 @@ class PlanEditScreen extends React.Component {
     mode: 'time',
     startOrEnd: 'start',
     errorMessage: [],
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -85,8 +88,10 @@ class PlanEditScreen extends React.Component {
   }
 
   async updatePlan() {
+    await this.checkState();
     //データ格納に使用する日付データを取得
     const date = this.props.navigation.state.params[2];
+    console.log(this.props.navigation.state.params[2]);
     const { year } = date;
     const { month } = date;
     const { day } = date;
@@ -97,39 +102,74 @@ class PlanEditScreen extends React.Component {
     const addDBEndTime = `${state.endTime}:${state.endTimeMinutes}`;
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
-    if (state.value === undefined) {
-      this.setState({ value: '' });
-    }
-    if (state.color === undefined) {
-      this.setState({ color: 'white' });
-    }
-
-    if (state.title === undefined) {
-      const errorMessage = [];
-      errorMessage.push(
-        <View>
-          <Text>タイトルを入力してください</Text>
-        </View>
-      );
-      this.setState({ errorMessage });
-    }
-    db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).add({
-      startTime: addDBStartTime,
-      endTime: addDBEndTime,
-      title: state.title,
-      value: state.value,
-      color: state.color,
-    })
+    if (this.state.key === undefined) {
+      console.log('key is undifined');
+      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).add({
+        startTime: addDBStartTime,
+        endTime: addDBEndTime,
+        title: state.title,
+        value: state.value,
+        color: state.color,
+      })
       .then(() => {
         this.props.navigation.goBack();
+        this.setState({ isLoading: false });
       })
       .catch((err) => {
         console.log(err);
       });
+    }
+    else {
+      console.log('key is OK');
+      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).doc(state.key).update({
+        startTime: addDBStartTime,
+        endTime: addDBEndTime,
+        title: state.title,
+        value: state.value,
+        color: state.color,
+      })
+      .then(() => {
+        this.props.navigation.goBack();
+        this.setState({ isLoading: false });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+  }
+
+  //state内のundifinedを解決するメソッド
+  checkState() {
+    const { state } = this;
+    //ローディング画面を起動
+    this.setState({ isLoading: true });
+    //stateのvalueがundifinedだった場合空白文字をセットする
+    if (state.value === undefined) {
+      this.setState({ value: '' });
+    }
+    //stateのcolorがundifinedだった場合whiteをセットする
+    if (state.color === undefined) {
+      this.setState({ color: 'white' });
+    }
+    //stateのtitileがundifinedだった場合エラー用のViewをプッシュして終了する
+    if (state.title === undefined) {
+      const errorMessage = [];
+      errorMessage.push(
+        <View>
+          <Text style={styles.errorMessage}>タイトルを入力してください</Text>
+        </View>
+      );
+      this.setState({ errorMessage });
+      this.setState({ isLoading: false });
+      // eslint-disable-next-line no-useless-return
+      return;
+    }
   }
 
   render() {
     const { state } = this;
+    console.log(state.key);
+    console.log(this.props);
     return (
       <ScrollView style={styles.container}>
         <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
@@ -151,8 +191,8 @@ class PlanEditScreen extends React.Component {
           defaultValue={this.state.color}
           onChangeItem={(item) => { this.setState({ color: item.value }); }}
         />
-        { this.state.errorMessage }
         <Text style={styles.title}>タイトル</Text>
+        { this.state.errorMessage }
         <TextInput
           style={styles.titleText}
           placeholder="タイトル入力"
@@ -182,6 +222,7 @@ class PlanEditScreen extends React.Component {
             onChange={this.onChange}
           />
         )}
+        <Loading text="読み込み中" isLoading={this.state.isLoading} />
       </ScrollView>
     );
   }
@@ -246,6 +287,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     zIndex: 100,
   },
+  errorMessage: {
+    color: 'red',
+  }
 });
 
 export default PlanEditScreen;

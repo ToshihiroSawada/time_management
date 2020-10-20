@@ -4,7 +4,7 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import firebase from 'firebase';
@@ -16,15 +16,37 @@ class Timezone extends React.Component {
     year: 0,
     month: 0,
     day: 0,
-    flag: false,
   }
 
   componentDidMount() {
+    const ParamsDay = this.props.navigation.state.params.day;
+    const year = ParamsDay.year.toString();
+    const month = ParamsDay.month.toString();
+    const day = ParamsDay.day.toString();
+    this.setState({ year });
+    this.setState({ month });
+    this.setState({ day });
     this.viewUpdate();
   }
 
   returnPlan() {
     this.viewUpdate();
+  }
+
+  Longtap() {
+    Alert.alert(
+      'Alert Title',
+      'My Alert Msg',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel'
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') }
+      ],
+      { cancelable: false }
+    );
   }
 
   async viewUpdate() {
@@ -41,7 +63,7 @@ class Timezone extends React.Component {
         querySnapshot.forEach((doc) => {
             planData.push({ ...doc.data(), key: doc.id });
         });
-        console.log(planData);
+        // console.log(planData);
         this.setState({ array: planData });
       });
     }
@@ -83,7 +105,7 @@ class Timezone extends React.Component {
     const cache = [array[j], this.props.navigation.state.params.day.dateString, { year, month, day }, this.returnPlan.bind(this)];
     viewStack.push(
       // eslint-disable-next-line max-len
-      <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, cache); }}>
+      <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, cache); }} onLongPress={() => { this.Longtap(); }}>
         <Text style={styles.timeText} key={key}>{i}:00</Text>
         <View style={[styles.plan, { backgroundColor: array[j].color }]}>
           <Text style={styles.matterText}>{textStack}</Text>
@@ -112,10 +134,10 @@ class Timezone extends React.Component {
 
   render() {
     const { array } = this.state;
-    const ParamsDay = this.props.navigation.state.params.day;
-    const year = ParamsDay.year.toString();
-    const month = ParamsDay.month.toString();
-    const day = ParamsDay.day.toString();
+    const { state } = this;
+    const { year } = state;
+    const { month } = state;
+    const { day } = state;
 
     let planCounter = 0;
     //予定の個数を数えるカウンター
@@ -139,7 +161,7 @@ class Timezone extends React.Component {
             array[j].startTime = cacheArray[0];
             cacheArray = array[j].endTime.toString().split(':');
             array[j].endTime = cacheArray[0];
-            console.log(this.state);
+            // console.log(this.state);
           }
           // eslint-disable-next-line eqeqeq
           if (i == array[j].startTime) {
