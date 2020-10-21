@@ -91,7 +91,6 @@ class PlanEditScreen extends React.Component {
     await this.checkState();
     //データ格納に使用する日付データを取得
     const date = this.props.navigation.state.params[2];
-    console.log(this.props.navigation.state.params[2]);
     const { year } = date;
     const { month } = date;
     const { day } = date;
@@ -102,6 +101,7 @@ class PlanEditScreen extends React.Component {
     const addDBEndTime = `${state.endTime}:${state.endTimeMinutes}`;
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
+    //keyが存在しない場合、CloudFirebaseにデータを登録する
     if (this.state.key === undefined) {
       console.log('key is undifined');
       await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).add({
@@ -119,6 +119,7 @@ class PlanEditScreen extends React.Component {
         console.log(err);
       });
     }
+    //keyが存在する場合、CloudFirebaseのデータを更新する
     else {
       console.log('key is OK');
       await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).doc(state.key).update({
@@ -168,8 +169,8 @@ class PlanEditScreen extends React.Component {
 
   render() {
     const { state } = this;
-    console.log(state.key);
-    console.log(this.props);
+    // console.log(state.key);
+    // console.log(this.props);
     return (
       <ScrollView style={styles.container}>
         <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>

@@ -33,17 +33,41 @@ class Timezone extends React.Component {
     this.viewUpdate();
   }
 
-  Longtap() {
+  //CloudFireStoreのデータを削除する処理
+  async deletePlan(key) {
+    const { state } = this;
+    const { year } = state;
+    const { month } = state;
+    const { day } = state;
+    const { currentUser } = firebase.auth();
+    const db = firebase.firestore();
+    await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`)
+    .doc(key)
+    .delete()
+    .then(() => {
+      console.log('deleted');
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+    this.viewUpdate();
+  }
+
+  Longtap(key) {
     Alert.alert(
-      'Alert Title',
-      'My Alert Msg',
+      '削除',
+      '削除しますか？',
       [
         {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
+          text: 'いいえ',
+          onPress: () => {},
           style: 'cancel'
         },
-        { text: 'OK', onPress: () => console.log('OK Pressed') }
+        {
+          text: 'はい',
+          onPress: () => this.deletePlan(key),
+        }
       ],
       { cancelable: false }
     );
@@ -104,8 +128,9 @@ class Timezone extends React.Component {
     //PlanEditScreenとResultEditScreenへ受け渡すデータをひとまとめにする
     const cache = [array[j], this.props.navigation.state.params.day.dateString, { year, month, day }, this.returnPlan.bind(this)];
     viewStack.push(
+      //ロングタップ時の削除に使用するため、PlanのkeyをLongtapひいてはdeletePlanへ渡す。
       // eslint-disable-next-line max-len
-      <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, cache); }} onLongPress={() => { this.Longtap(); }}>
+      <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, cache); }} onLongPress={() => { this.Longtap(key); }}>
         <Text style={styles.timeText} key={key}>{i}:00</Text>
         <View style={[styles.plan, { backgroundColor: array[j].color }]}>
           <Text style={styles.matterText}>{textStack}</Text>
@@ -118,7 +143,6 @@ class Timezone extends React.Component {
   viewCreate(key, viewStack, array, i, j) {
     //ループ処理中か判断するフラグ
     let loopflag = true;
-    key += 1;
     this.viewPush(viewStack, key, array, i, j);
     //ArrayのstartTimeとendTimeが一致しない場合の処理(endTimeと一致するまでループ(Planの内容は同じ))
     if (array[j].startTime !== array[j].endTime) {
@@ -147,7 +171,7 @@ class Timezone extends React.Component {
     catch (err) {
       console.log('ERROR', err);
     }
-    let key = 0;
+    let key;
     const viewStack = [];
     //予定が存在しているか確認する用のフラグ
     let planFlag = false;
@@ -165,6 +189,7 @@ class Timezone extends React.Component {
           }
           // eslint-disable-next-line eqeqeq
           if (i == array[j].startTime) {
+            key = array[j].key;
             planFlag = true;
             break;
           }
@@ -188,7 +213,7 @@ class Timezone extends React.Component {
         else {
           destinationScreen = 'ResultEdit';
         }
-        key += 1;
+        key = i;
         viewStack.push(
           <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, [i, 'newPlan', { year, month, day }, this.returnPlan.bind(this)]); }}>
             <Text style={styles.timeText} key={key}>{i}:00</Text>
