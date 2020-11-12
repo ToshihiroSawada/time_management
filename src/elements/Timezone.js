@@ -34,18 +34,24 @@ class Timezone extends React.Component {
   }
 
   //CloudFireStoreのデータを削除する処理
-  async deletePlan(key) {
+  async deletePlan(key, id) {
     const { state } = this;
     const { year } = state;
     const { month } = state;
     const { day } = state;
+    //名前が微妙に違うため、idをDBの名前に変更する
+    if (id === 'Plan') {
+      id = 'plans';
+    }
+    else {
+      id = 'results';
+    }
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
-    await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`)
+    await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`)
     .doc(key)
     .delete()
     .then(() => {
-      console.log('deleted');
     })
     .catch((err) => {
       console.log(err);
@@ -54,7 +60,7 @@ class Timezone extends React.Component {
     this.viewUpdate();
   }
 
-  Longtap(key) {
+  Longtap(key, id) {
     Alert.alert(
       '削除',
       '削除しますか？',
@@ -66,7 +72,7 @@ class Timezone extends React.Component {
         },
         {
           text: 'はい',
-          onPress: () => this.deletePlan(key),
+          onPress: () => this.deletePlan(key, id),
         }
       ],
       { cancelable: false }
@@ -81,13 +87,15 @@ class Timezone extends React.Component {
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
     const { id } = this.state;
+    //読み込みが始まった段階でロードのActivityIndicatorを表示する
+    const loading = this.props.loadState[1];
+    loading();
     if (id === 'Plan') {
       await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).get().then((querySnapshot) => {
         const planData = [];
         querySnapshot.forEach((doc) => {
             planData.push({ ...doc.data(), key: doc.id });
         });
-        // console.log(planData);
         this.setState({ array: planData });
       });
     }
@@ -100,20 +108,14 @@ class Timezone extends React.Component {
         this.setState({ array: resultData });
       });
     }
+
+    //読み込みが終わった段階でロードのActivityIndicatorを非表示にする
+    const loaded = this.props.loadState[0];
+    loaded();
   }
 
   //ViewをPushする処理
   viewPush(viewStack, key, array, i, j, loopflag) {
-    //destinationScreenにどこの画面に遷移するのかを格納する
-    // eslint-disable-next-line no-var
-    let destinationScreen;
-    if (this.state.id === 'Plan') {
-      destinationScreen = 'PlanEdit';
-    }
-    else {
-      destinationScreen = 'ResultEdit';
-    }
-
     let textStack;
     if (loopflag === true) {
       textStack = '〃';
@@ -125,12 +127,12 @@ class Timezone extends React.Component {
     const { year } = state;
     const { month } = state;
     const { day } = state;
-    //PlanEditScreenとResultEditScreenへ受け渡すデータをひとまとめにする
-    const cache = [array[j], this.props.navigation.state.params.day.dateString, { year, month, day }, this.returnPlan.bind(this)];
+    //EditScreenへ受け渡すデータをひとまとめにする
+    const cache = [array[j], this.props.navigation.state.params.day.dateString, { year, month, day }, this.returnPlan.bind(this), this.state.id];
     viewStack.push(
       //ロングタップ時の削除に使用するため、PlanのkeyをLongtapひいてはdeletePlanへ渡す。
       // eslint-disable-next-line max-len
-      <TouchableOpacity style={styles.timeView} id={this.state.id} onPress={() => { this.props.navigation.navigate(destinationScreen, cache); }} onLongPress={() => { this.Longtap(key); }}>
+      <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('Edit', cache); }} onLongPress={() => { this.Longtap(key, this.state.id); }}>
         <Text style={styles.timeText} key={key}>{i}:00</Text>
         <View style={[styles.plan, { backgroundColor: array[j].color }]}>
           <Text style={styles.matterText}>{textStack}</Text>
@@ -185,7 +187,6 @@ class Timezone extends React.Component {
             array[j].startTime = cacheArray[0];
             cacheArray = array[j].endTime.toString().split(':');
             array[j].endTime = cacheArray[0];
-            // console.log(this.state);
           }
           // eslint-disable-next-line eqeqeq
           if (i == array[j].startTime) {
@@ -204,18 +205,10 @@ class Timezone extends React.Component {
       }
       //フラグが立たなかった場合、時間のみ記述した空のViewをPushする
       else {
-        //destinationScreenにどこの画面に遷移するのかを格納する
-        // eslint-disable-next-line no-unused-vars
-        let destinationScreen;
-        if (this.state.id === 'Plan') {
-          destinationScreen = 'PlanEdit';
-        }
-        else {
-          destinationScreen = 'ResultEdit';
-        }
         key = i;
+        const cache = [i, 'newPlan', { year, month, day }, this.returnPlan.bind(this), this.state.id];
         viewStack.push(
-          <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate(destinationScreen, [i, 'newPlan', { year, month, day }, this.returnPlan.bind(this)]); }}>
+          <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('Edit', cache); }}>
             <Text style={styles.timeText} key={key}>{i}:00</Text>
           </TouchableOpacity>
         );

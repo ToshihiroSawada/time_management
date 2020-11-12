@@ -15,8 +15,9 @@ import Icon from 'react-native-vector-icons/Feather';
 
 import Loading from '../elements/Loading';
 
-class PlanEditScreen extends React.Component {
+class EditScreen extends React.Component {
   state = {
+    id: this.props.navigation.state.params[4],
     key: this.props.navigation.state.params[0].key,
     startTime: this.props.navigation.state.params[0].startTime,
     startTimeMinutes: '00',
@@ -87,14 +88,27 @@ class PlanEditScreen extends React.Component {
     this.setState({ show: true });
   }
 
+  //TimeZoneのViewを更新する
+  returnPlan() {
+    const update = this.props.navigation.state.params[3];
+    update();
+  }
+
   async updatePlan() {
     await this.checkState();
+    let { id } = this.state;
+    //名前が微妙に違うため、idをDBの名前に変更する
+    if (id === 'Plan') {
+      id = 'plans';
+    }
+    else {
+      id = 'results';
+    }
     //データ格納に使用する日付データを取得
     const date = this.props.navigation.state.params[2];
     const { year } = date;
     const { month } = date;
     const { day } = date;
-
     const { state } = this;
     //DB格納用にデータを編集
     const addDBStartTime = `${state.startTime}:${state.startTimeMinutes}`;
@@ -103,8 +117,7 @@ class PlanEditScreen extends React.Component {
     const db = firebase.firestore();
     //keyが存在しない場合、CloudFirebaseにデータを登録する
     if (this.state.key === undefined) {
-      console.log('key is undifined');
-      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).add({
+      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`).add({
         startTime: addDBStartTime,
         endTime: addDBEndTime,
         title: state.title,
@@ -112,6 +125,7 @@ class PlanEditScreen extends React.Component {
         color: state.color,
       })
       .then(() => {
+        this.returnPlan();
         this.props.navigation.goBack();
         this.setState({ isLoading: false });
       })
@@ -121,8 +135,7 @@ class PlanEditScreen extends React.Component {
     }
     //keyが存在する場合、CloudFirebaseのデータを更新する
     else {
-      console.log('key is OK');
-      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).doc(state.key).update({
+      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`).doc(state.key).update({
         startTime: addDBStartTime,
         endTime: addDBEndTime,
         title: state.title,
@@ -130,6 +143,7 @@ class PlanEditScreen extends React.Component {
         color: state.color,
       })
       .then(() => {
+        this.returnPlan();
         this.props.navigation.goBack();
         this.setState({ isLoading: false });
       })
@@ -169,16 +183,30 @@ class PlanEditScreen extends React.Component {
 
   render() {
     const { state } = this;
-    // console.log(state.key);
-    // console.log(this.props);
+    const viewStack = [];
+    if (this.props.navigation.state.params[4] === 'Plan') {
+      viewStack.push(
+        <View>
+          <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
+            <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
+            <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    else {
+      viewStack.push(
+        <View>
+          <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
+          <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
+        </View>
+      );
+    }
     return (
       <ScrollView style={styles.container}>
-        <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
-          <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
-          <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
-        </TouchableOpacity>
+        {viewStack}
         <DropDownPicker
           containerStyle={styles.dropDownPicker}
           zIndex={200}
@@ -215,7 +243,6 @@ class PlanEditScreen extends React.Component {
         </TouchableOpacity>
         {this.state.show && (
           <DateTimePicker
-            testID="showTimepicker"
             value={this.state.date}
             mode={this.state.mode}
             is24Hour
@@ -293,4 +320,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PlanEditScreen;
+export default EditScreen;

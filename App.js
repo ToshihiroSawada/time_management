@@ -9,8 +9,7 @@ import { decode, encode } from 'base-64';
 import LoginScreen from './src/screens/LoginScreen';
 import CalendarScreen from './src/screens/CalendarScreen';
 import ResultScreen from './src/screens/ResultsScreen';
-import PlanEditScreen from './src/screens/PlanEditScreen';
-import ResultEditScreen from './src/screens/ResultEditScreen';
+import EditScreen from './src/screens/EditScreen';
 import Signup from './src/screens/SignupScreen';
 
 import ENV from './env.json';
@@ -48,18 +47,12 @@ const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作�
   Results: {
     screen: ResultScreen,
   },
-  PlanEdit: {
+  Edit: {
     //タイトルヘッダーを変更
     navigationOptions: {
-      headerTitle: '予定編集画面',
+      headerTitle: '編集画面',
     },
-    screen: PlanEditScreen,
-  },
-  ResultEdit: {
-    navigationOptions: {
-      headerTitle: '結果編集画面',
-    },
-    screen: ResultEditScreen,
+    screen: EditScreen,
   },
 }, { //画面を用意する部分の外(以下の部分)にdefaultNavigationOptionsを出すことによって、全画面共通のオプションを作成できる
   defaultNavigationOptions: {
