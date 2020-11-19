@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 /* eslint-disable comma-dangle */
 /* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
@@ -20,9 +21,9 @@ class EditScreen extends React.Component {
     id: this.props.navigation.state.params[4],
     key: this.props.navigation.state.params[0].key,
     startTime: this.props.navigation.state.params[0].startTime,
-    startTimeMinutes: '00',
+    startTimeMinutes: this.props.navigation.state.params[0].startTimeMinutes,
     endTime: this.props.navigation.state.params[0].endTime,
-    endTimeMinutes: '00',
+    endTimeMinutes: this.props.navigation.state.params[0].endTimeMinutes,
     title: this.props.navigation.state.params[0].title,
     value: this.props.navigation.state.params[0].value,
     color: this.props.navigation.state.params[0].color,
@@ -30,11 +31,13 @@ class EditScreen extends React.Component {
     date: new Date(),
     mode: 'time',
     startOrEnd: 'start',
-    errorMessage: [],
+    titleErrorMessage: [],
+    timeErrorMessage: [],
     isLoading: false,
   }
 
   componentDidMount() {
+    console.log(this.state);
     //startTime・endTimeどちらかでもundifinedだった場合見栄を考慮し0にする
     if (this.state.startTime === undefined || this.state.endTime === undefined) {
       this.setState({ startTime: 0 });
@@ -42,11 +45,14 @@ class EditScreen extends React.Component {
     }
 
     //新しく作成する場合の処理(idで判別し、startTime・endTimeにTimeZoneでタップした時間を入れる)
+    //また、startTimeMinutes・endTimeMinutesに00を入れる。
     const { params } = this.props.navigation.state;
     try {
       if (params[1] === 'newPlan') {
         this.setState({ startTime: params[0] });
+        this.setState({ startTimeMinutes: '00' });
         this.setState({ endTime: params[0] });
+        this.setState({ endTimeMinutes: '00' });
       }
     }
     catch (err) {
@@ -95,7 +101,8 @@ class EditScreen extends React.Component {
   }
 
   async updatePlan() {
-    await this.checkState();
+    const returnNum = await this.checkState();
+    if (returnNum === 1) { return; }
     let { id } = this.state;
     //名前が微妙に違うため、idをDBの名前に変更する
     if (id === 'Plan') {
@@ -153,9 +160,10 @@ class EditScreen extends React.Component {
     }
   }
 
-  //state内のundifinedを解決するメソッド
+  //state内のundifined等を解決するメソッド
   checkState() {
     const { state } = this;
+    const errorMessage = [];
     //ローディング画面を起動
     this.setState({ isLoading: true });
     //stateのvalueがundifinedだった場合空白文字をセットする
@@ -166,22 +174,42 @@ class EditScreen extends React.Component {
     if (state.color === undefined) {
       this.setState({ color: 'white' });
     }
-    //stateのtitileがundifinedだった場合エラー用のViewをプッシュして終了する
-    if (state.title === undefined) {
-      const errorMessage = [];
+    //DateTimePickerで、時間をさかのぼって登録した際にエラー用のViewをプッシュして終了する
+    if (state.startTime > state.endTime) {
       errorMessage.push(
         <View>
-          <Text style={styles.errorMessage}>タイトルを入力してください</Text>
+          <Text style={styles.titleErrorMessage}>開始時間と終了時間を確認してください</Text>
         </View>
       );
-      this.setState({ errorMessage });
+      this.setState({ timeErrorMessage: errorMessage });
       this.setState({ isLoading: false });
-      // eslint-disable-next-line no-useless-return
-      return;
+      return 1;
     }
+    //エラーを解決した場合に表示されたままになってしまうため、空にする
+    else {
+      this.setState({ timeErrorMessage: [] });
+    }
+
+    //stateのtitileがundifined、または空文字("")だった場合エラー用のViewをプッシュして終了する
+    if (state.title === undefined || state.title === '') {
+      errorMessage.push(
+        <View>
+          <Text style={styles.titleErrorMessage}>タイトルを入力してください</Text>
+        </View>
+      );
+      this.setState({ titleErrorMessage: errorMessage });
+      this.setState({ isLoading: false });
+      return 1;
+    }
+    //エラーを解決した場合に表示されたままになってしまうため、空にする
+    else {
+      this.setState({ titleErrorMessage: [] });
+    }
+    return 0;
   }
 
   render() {
+    console.log(this.props);
     const { state } = this;
     const viewStack = [];
     if (this.props.navigation.state.params[4] === 'Plan') {
@@ -206,6 +234,7 @@ class EditScreen extends React.Component {
     }
     return (
       <ScrollView style={styles.container}>
+        { this.state.timeErrorMessage }
         {viewStack}
         <DropDownPicker
           containerStyle={styles.dropDownPicker}
@@ -221,7 +250,7 @@ class EditScreen extends React.Component {
           onChangeItem={(item) => { this.setState({ color: item.value }); }}
         />
         <Text style={styles.title}>タイトル</Text>
-        { this.state.errorMessage }
+        { this.state.titleErrorMessage }
         <TextInput
           style={styles.titleText}
           placeholder="タイトル入力"

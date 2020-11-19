@@ -185,8 +185,10 @@ class Timezone extends React.Component {
           if (array[j].startTime.match(/:/) !== null) {
             let cacheArray = array[j].startTime.toString().split(':');
             array[j].startTime = cacheArray[0];
+            array[j].startTimeMinutes = cacheArray[1];
             cacheArray = array[j].endTime.toString().split(':');
             array[j].endTime = cacheArray[0];
+            array[j].endTimeMinutes = cacheArray[1];
           }
           // eslint-disable-next-line eqeqeq
           if (i == array[j].startTime) {
