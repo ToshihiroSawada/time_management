@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 //カレンダーを使用するためにインポート
 import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class CalendarScreen extends React.Component {
   render() {
@@ -24,6 +25,9 @@ class CalendarScreen extends React.Component {
             this.props.navigation.navigate('Results', { day });
         }}
         />
+        <TouchableOpacity style={styles.button} onPress={() => { this.props.navigation.navigate('StartStop'); }}>
+          <Text>スタート・ストップ</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -35,6 +39,9 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingTop: 24,
     backgroundColor: '#fff',
+  },
+  button: {
+    paddingTop: 100,
   },
 });
 

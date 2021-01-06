@@ -23,9 +23,11 @@ class Timezone extends React.Component {
     const year = ParamsDay.year.toString();
     const month = ParamsDay.month.toString();
     const day = ParamsDay.day.toString();
-    this.setState({ year });
-    this.setState({ month });
-    this.setState({ day });
+    this.setState({
+      year,
+      month,
+      day,
+    });
     this.viewUpdate();
   }
 

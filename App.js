@@ -11,6 +11,7 @@ import CalendarScreen from './src/screens/CalendarScreen';
 import ResultScreen from './src/screens/ResultsScreen';
 import EditScreen from './src/screens/EditScreen';
 import Signup from './src/screens/SignupScreen';
+import StartStop from './src/screens/StartStop';
 
 import ENV from './env.json';
 
@@ -53,6 +54,9 @@ const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作�
       headerTitle: '編集画面',
     },
     screen: EditScreen,
+  },
+  StartStop: {
+    screen: StartStop,
   },
 }, { //画面を用意する部分の外(以下の部分)にdefaultNavigationOptionsを出すことによって、全画面共通のオプションを作成できる
   defaultNavigationOptions: {

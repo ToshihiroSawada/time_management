@@ -6,7 +6,7 @@ import { NavigationActions, StackActions } from 'react-navigation';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as SecureStore from 'expo-secure-store';
 
-import Loading from '../elements/Loading';
+import Loading from '../components/Loading';
 
 class LoginScreen extends React.Component {
   state = { //テスト時に入力が面倒な場合、シングルクォートの中に記述してくと入力が不要になる
@@ -14,38 +14,35 @@ class LoginScreen extends React.Component {
     password: '',
     isLoading: false,
     visible: false,
+    errorMessage: [],
   }
 
   async componentDidMount() {
     //awaitはthen・catchの記述を簡略化したもの
     const email = await SecureStore.getItemAsync('email');
     const password = await SecureStore.getItemAsync('password');
-    this.setState({ email });
-    this.setState({ password });
-  }
-
-  //ログイン後MemoListScreenに遷移する機能を共通化したメソッド
-  navigateToHome() {
-    const resetAction = StackActions.reset({ //ログイン完了後に画面遷移をリセットして、戻るボタンでログイン画面に戻らないようにする
-      index: 0, //actionの配列(下記)の0番目(今回は0番目のみ)に遷移する
-      actions: [
-        NavigationActions.navigate({ routeName: 'Home' }), //0番目にHome画面を設定
-      ],
+    this.setState({
+      email,
+      password,
     });
-    this.props.navigation.dispatch(resetAction);
   }
 
   //ログイン機能の実装
   handleSubmit() {
-    // eslint-disable-next-line no-empty
-    if (this.state.email === null || this.state.password === null) {}
+    //emailまたはpasswordまたはその両方が入力されていない場合エラーを表示
+    if (this.state.email === '' || this.state.password === '') {
+      const err = [];
+      err.push(
+      <View><Text style={styles.errorMessage}>メールアドレスとパスワードを入力してください</Text></View>
+      );
+      this.setState({ errorMessage: err });
+    }
     else {
       this.setState({ isLoading: true });
       firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
         SecureStore.setItemAsync('email', this.state.email);
         SecureStore.setItemAsync('password', this.state.password);
-        this.setState({ isLoading: false });
         this.navigateToHome();
       })
       .catch(() => {
@@ -58,6 +55,18 @@ class LoginScreen extends React.Component {
     this.props.navigation.navigate('Signup');
   }
 
+    //ログイン後MemoListScreenに遷移するメソッド
+    navigateToHome() {
+      const resetAction = StackActions.reset({ //ログイン完了後に画面遷移をリセットして、戻るボタンでログイン画面に戻らないようにする
+        index: 0, //actionの配列(下記)の0番目(今回は0番目のみ)に遷移する
+        actions: [
+          NavigationActions.navigate({ routeName: 'Home' }), //0番目にHome画面を設定
+        ],
+      });
+      this.props.navigation.dispatch(resetAction);
+    }
+
+  //パスワードを表示するかどうか判断するためのstateを変更するメソッド
   changeVisible() {
     if (this.state.visible === false) {
       this.setState({ visible: true });
@@ -111,6 +120,7 @@ class LoginScreen extends React.Component {
         <Text style={styles.title}>
           ログイン
         </Text>
+        {this.state.errorMessage}
         <TextInput
           style={styles.input}
           value={this.state.email}
@@ -178,6 +188,9 @@ const styles = StyleSheet.create({
   signupText: {
     fontSize: 16,
   },
+  errorMessage: {
+    color: 'red',
+  }
 });
 
 export default LoginScreen;

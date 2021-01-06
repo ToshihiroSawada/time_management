@@ -14,7 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
-import Loading from '../elements/Loading';
+import Loading from '../components/Loading';
 
 class EditScreen extends React.Component {
   state = {
@@ -37,11 +37,12 @@ class EditScreen extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.state);
     //startTime・endTimeどちらかでもundifinedだった場合見栄を考慮し0にする
     if (this.state.startTime === undefined || this.state.endTime === undefined) {
-      this.setState({ startTime: 0 });
-      this.setState({ endTime: 0 });
+      this.setState({
+        startTime: 0,
+        endTime: 0,
+      });
     }
 
     //新しく作成する場合の処理(idで判別し、startTime・endTimeにTimeZoneでタップした時間を入れる)
@@ -49,15 +50,26 @@ class EditScreen extends React.Component {
     const { params } = this.props.navigation.state;
     try {
       if (params[1] === 'newPlan') {
-        this.setState({ startTime: params[0] });
-        this.setState({ startTimeMinutes: '00' });
-        this.setState({ endTime: params[0] });
-        this.setState({ endTimeMinutes: '00' });
+        this.setState({
+          startTime: params[0],
+          startTimeMinutes: '00',
+          endTime: params[0],
+          endTimeMinutes: '00',
+        });
       }
     }
     catch (err) {
       console.log('ERROR:', err);
     }
+  }
+
+  //開始時刻と終了時刻をタップした際にTimePickerを表示する
+  handleSubmit(startOrEnd) {
+    //startTimeかendTimeかどちらを変更するのか判別する為に、stateのstartOrEndを変更する
+    this.setState({
+      startOrEnd,
+      show: true
+    });
   }
 
   onChange = (_event, selectedDate) => {
@@ -75,24 +87,21 @@ class EditScreen extends React.Component {
     }
 
     if (this.state.startOrEnd === 'start') {
-      this.setState({ startTime: hour });
-      this.setState({ startTimeMinutes: minutes });
+      this.setState({
+        startTime: hour,
+        startTimeMinutes: minutes,
+      });
     }
     else {
-      this.setState({ endTime: hour });
-      this.setState({ endTimeMinutes: minutes });
+      this.setState({
+        endTime: hour,
+        endTimeMinutes: minutes,
+      });
     }
 
     //dateへ日本時間に変換してセットする
     this.setState({ date: currentDate });
   };
-
-  //開始時刻と終了時刻をタップした際にTimePickerを表示する
-  handleSubmit(startOrEnd) {
-    //startTimeかendTimeかどちらを変更するのか判別する為に、stateのstartOrEndを変更する
-    this.setState({ startOrEnd });
-    this.setState({ show: true });
-  }
 
   //TimeZoneのViewを更新する
   returnPlan() {
@@ -178,11 +187,13 @@ class EditScreen extends React.Component {
     if (state.startTime > state.endTime) {
       errorMessage.push(
         <View>
-          <Text style={styles.titleErrorMessage}>開始時間と終了時間を確認してください</Text>
+          <Text style={styles.errorMessage}>開始時間と終了時間を確認してください</Text>
         </View>
       );
-      this.setState({ timeErrorMessage: errorMessage });
-      this.setState({ isLoading: false });
+      this.setState({
+        timeErrorMessage: errorMessage,
+        isLoading: false,
+      });
       return 1;
     }
     //エラーを解決した場合に表示されたままになってしまうため、空にする
@@ -194,11 +205,13 @@ class EditScreen extends React.Component {
     if (state.title === undefined || state.title === '') {
       errorMessage.push(
         <View>
-          <Text style={styles.titleErrorMessage}>タイトルを入力してください</Text>
+          <Text style={styles.errorMessage}>タイトルを入力してください</Text>
         </View>
       );
-      this.setState({ titleErrorMessage: errorMessage });
-      this.setState({ isLoading: false });
+      this.setState({
+        titleErrorMessage: errorMessage,
+        isLoading: false,
+      });
       return 1;
     }
     //エラーを解決した場合に表示されたままになってしまうため、空にする
@@ -209,7 +222,6 @@ class EditScreen extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     const { state } = this;
     const viewStack = [];
     if (this.props.navigation.state.params[4] === 'Plan') {

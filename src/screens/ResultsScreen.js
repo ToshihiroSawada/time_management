@@ -2,9 +2,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Loading from '../elements/Loading';
 
-import Timezone from '../elements/Timezone';
+import Loading from '../components/Loading';
+import Timezone from '../components/Timezone';
 
 export default class ResultsScreen extends React.Component {
   state = {

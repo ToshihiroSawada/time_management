@@ -7,6 +7,8 @@ class SignupScreen extends React.Component {
   state = {
     email: '',
     password: '',
+    visible: false,
+
   }
 
   handleSubmit() {
@@ -27,7 +29,52 @@ class SignupScreen extends React.Component {
       });
   }
 
+  //パスワードを表示するかどうか判断するためのstateを変更するメソッド
+  changeVisible() {
+    if (this.state.visible === false) {
+      this.setState({ visible: true });
+    }
+    else {
+      this.setState({ visible: false });
+    }
+  }
+
+  //パスワードを表示するかどうか判断してViewをPushするメソッド
+  viewStack() {
+    const view = [];
+    if (this.state.visible === false) {
+      view.push(
+        <TextInput
+          style={styles.input}
+          value={this.state.password}
+          onChangeText={(text) => { this.setState({ password: text }); }}
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Password"
+          secureTextEntry
+          underlineColorAndroid="transparent" //AndroidのTextInputでに下線が出ないようにする設定(表示されなかったが一応入れておく)
+        />,
+      );
+    }
+    else {
+      view.push(
+        <TextInput
+          style={styles.input}
+          value={this.state.password}
+          onChangeText={(text) => { this.setState({ password: text }); }}
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Password"
+          underlineColorAndroid="transparent" //AndroidのTextInputでに下線が出ないようにする設定(表示されなかったが一応入れておく)
+        />,
+      );
+    }
+    return view;
+  }
+
   render() {
+    let stack = [];
+    stack = this.viewStack();
     return (
       <View style={styles.container}>
         <Text style={styles.title}>
@@ -42,16 +89,10 @@ class SignupScreen extends React.Component {
           placeholder="Email Address"
           underlineColorAndroid="transparent" //AndroidのTextInputでに下線が出ないようにする設定(表示されなかったが一応入れておく)
         />
-        <TextInput
-          style={styles.input}
-          value={this.state.password}
-          onChangeText={(text) => { this.setState({ password: text }); }}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="Password"
-          secureTextEntry
-          underlineColorAndroid="transparent" //AndroidのTextInputでに下線が出ないようにする設定(表示されなかったが一応入れておく)
-        />
+        {stack}
+        <TouchableHighlight onPress={this.changeVisible.bind(this)}>
+          <Text>パスワードを表示</Text>
+        </TouchableHighlight>
         <TouchableHighlight style={styles.button} onPress={this.handleSubmit.bind(this)} underlayColor="#f7f">
           <Text style={styles.buttonTitle}>送信する</Text>
         </TouchableHighlight>
@@ -88,6 +129,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', //文字(送信)を中央に配置
     width: '70%',
     alignSelf: 'center', //ボタンの位置を中央に配置
+    marginTop: 100,
   },
   buttonTitle: {
     color: '#fff',
