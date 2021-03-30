@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,6 +12,7 @@ class StartStop extends React.Component {
     startTime: '',
     endTime: '',
     buttonText: '',
+    id: 'newPlan',
   }
 
   componentDidMount() {
@@ -20,19 +21,15 @@ class StartStop extends React.Component {
 
   //TouchableOpacity(スタートボタン)をタップした際のメソッド
   async handleSubmit() {
-    let date = new Date();
-    let time = '';
-    const year = date.getFullYear();
-    const month = parseInt(date.getMonth(), 10) + 1;
-    const day = date.getDay();
-    time = date.toLocaleTimeString('ja');
-    date = `${year}/${month}/${day} ${time}`;
+    const date = new Date();
+    const timeText = await this.timeTextCreate(date);
+    console.log(timeText);
     if (this.state.timeState === false) {
-      const dateText = `${year}/${month}/${day}\n${time}`;
       //stateとAsyncStorageに格納する
-      this.setData(date);
+      this.setData(String(date));
       this.setState({
-        timeText: dateText,
+        timeText,
+        startTime: date,
         buttonText: 'ストップ',
         timeState: true,
       });
@@ -41,12 +38,15 @@ class StartStop extends React.Component {
       try {
         //AsyncStorageからデータを削除
         await AsyncStorage.removeItem('@dateString');
+        console.log(this.state);
         this.setState({
           endTime: date,
           timeState: false,
           timeText: 'スタートボタンを\n押してください',
           buttonText: 'スタート',
         });
+        console.log(this.state);
+        this.props.navigation.navigate('Edit', { state: this.state }); //受け渡しはできたのでEdit画面の修正に入る
       }
       catch (e) {
         console.log(e);
@@ -84,8 +84,19 @@ class StartStop extends React.Component {
         });
       }
     } catch (e) {
-      console.log('ERROR:', e);
+      console.log('ERROR:aaa', e);
     }
+  }
+
+  async timeTextCreate(date) {
+    let time = '';
+    let dateString = date;
+    const year = dateString.getFullYear();
+    const month = parseInt(dateString.getMonth(), 10) + 1;
+    const day = dateString.getDay();
+    time = date.toLocaleTimeString('ja');
+    dateString = `${year}/${month}/${day}\n${time}`;
+    return dateString;
   }
 
   render() {
@@ -95,7 +106,7 @@ class StartStop extends React.Component {
         <TouchableHighlight style={styles.Button} onPress={this.handleSubmit.bind(this)}>
           <Text style={styles.ButtonTitle}>{this.state.buttonText}</Text>
         </TouchableHighlight>
-      </View>
+      </View >
     );
   }
 }

@@ -18,15 +18,15 @@ import Loading from '../components/Loading';
 
 class EditScreen extends React.Component {
   state = {
-    id: this.props.navigation.state.params[4],
-    key: this.props.navigation.state.params[0].key,
-    startTime: this.props.navigation.state.params[0].startTime,
-    startTimeMinutes: this.props.navigation.state.params[0].startTimeMinutes,
-    endTime: this.props.navigation.state.params[0].endTime,
-    endTimeMinutes: this.props.navigation.state.params[0].endTimeMinutes,
-    title: this.props.navigation.state.params[0].title,
-    value: this.props.navigation.state.params[0].value,
-    color: this.props.navigation.state.params[0].color,
+    id: '',
+    key: '',
+    startTime: '',
+    startTimeMinutes: '',
+    endTime: '',
+    endTimeMinutes: '',
+    title: '',
+    value: '',
+    color: '',
     show: false,
     date: new Date(),
     mode: 'time',
@@ -37,6 +37,7 @@ class EditScreen extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.props);
     //startTime・endTimeどちらかでもundifinedだった場合見栄を考慮し0にする
     if (this.state.startTime === undefined || this.state.endTime === undefined) {
       this.setState({
@@ -48,13 +49,27 @@ class EditScreen extends React.Component {
     //新しく作成する場合の処理(idで判別し、startTime・endTimeにTimeZoneでタップした時間を入れる)
     //また、startTimeMinutes・endTimeMinutesに00を入れる。
     const { params } = this.props.navigation.state;
+    console.log(this.props.navigation.state.params);
     try {
-      if (params[1] === 'newPlan') {
+      if (params.id === 'newPlan') {
         this.setState({
-          startTime: params[0],
-          startTimeMinutes: '00',
-          endTime: params[0],
-          endTimeMinutes: '00',
+          startTime: params.startTime,
+          // startTimeMinutes: '00',
+          endTime: params.endTime,
+          // endTimeMinutes: '00',
+        });
+      }
+      else {
+        this.setState({
+          id: this.props.navigation.state.params[4],
+          key: this.props.navigation.state.params[0].key,
+          startTime: this.props.navigation.state.params[0].startTime,
+          startTimeMinutes: this.props.navigation.state.params[0].startTimeMinutes,
+          endTime: this.props.navigation.state.params[0].endTime,
+          endTimeMinutes: this.props.navigation.state.params[0].endTimeMinutes,
+          title: this.props.navigation.state.params[0].title,
+          value: this.props.navigation.state.params[0].value,
+          color: this.props.navigation.state.params[0].color,
         });
       }
     }
@@ -140,14 +155,14 @@ class EditScreen extends React.Component {
         value: state.value,
         color: state.color,
       })
-      .then(() => {
-        this.returnPlan();
-        this.props.navigation.goBack();
-        this.setState({ isLoading: false });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then(() => {
+          this.returnPlan();
+          this.props.navigation.goBack();
+          this.setState({ isLoading: false });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
     //keyが存在する場合、CloudFirebaseのデータを更新する
     else {
@@ -158,14 +173,14 @@ class EditScreen extends React.Component {
         value: state.value,
         color: state.color,
       })
-      .then(() => {
-        this.returnPlan();
-        this.props.navigation.goBack();
-        this.setState({ isLoading: false });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then(() => {
+          this.returnPlan();
+          this.props.navigation.goBack();
+          this.setState({ isLoading: false });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }
 
@@ -224,29 +239,32 @@ class EditScreen extends React.Component {
   render() {
     const { state } = this;
     const viewStack = [];
-    if (this.props.navigation.state.params[4] === 'Plan') {
-      viewStack.push(
-        <View>
-          <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
+    try {
+      if (this.props.navigation.state.params[4] === 'Plan') {
+        viewStack.push(
+          <View>
+            <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
+              <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
+              <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      }
+      else {
+        viewStack.push(
+          <View>
             <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
             <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
-          </TouchableOpacity>
-        </View>
-      );
+          </View>
+        );
+      }
     }
-    else {
-      viewStack.push(
-        <View>
-          <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
-          <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
-        </View>
-      );
-    }
+    catch (err) { console.log(err); }
     return (
       <ScrollView style={styles.container}>
-        { this.state.timeErrorMessage }
+        { this.state.timeErrorMessage}
         {viewStack}
         <DropDownPicker
           containerStyle={styles.dropDownPicker}
@@ -262,7 +280,7 @@ class EditScreen extends React.Component {
           onChangeItem={(item) => { this.setState({ color: item.value }); }}
         />
         <Text style={styles.title}>タイトル</Text>
-        { this.state.titleErrorMessage }
+        { this.state.titleErrorMessage}
         <TextInput
           style={styles.titleText}
           placeholder="タイトル入力"
@@ -270,7 +288,7 @@ class EditScreen extends React.Component {
           onChangeText={(text) => { this.setState({ title: text }); }}
         />
         <Text style={styles.title}>内容</Text>
-        <KeyboardAvoidingView behavior="padding">
+        <KeyboardAvoidingView behavior="position">
           <TextInput
             style={styles.textBox}
             multiline
