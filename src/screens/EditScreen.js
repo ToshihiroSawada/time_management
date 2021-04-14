@@ -15,15 +15,16 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
 import Loading from '../components/Loading';
+import timeTextCreate from '../function/timeTextCreate';
 
 class EditScreen extends React.Component {
   state = {
     id: '',
     key: '',
     startTime: '',
-    startTimeMinutes: '',
+    startTimeText: '',
     endTime: '',
-    endTimeMinutes: '',
+    endTimeText: '',
     title: '',
     value: '',
     color: '',
@@ -37,7 +38,7 @@ class EditScreen extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
+    console.log(this.props.navigation.state);
     //startTime・endTimeどちらかでもundifinedだった場合見栄を考慮し0にする
     if (this.state.startTime === undefined || this.state.endTime === undefined) {
       this.setState({
@@ -48,15 +49,19 @@ class EditScreen extends React.Component {
 
     //新しく作成する場合の処理(idで判別し、startTime・endTimeにTimeZoneでタップした時間を入れる)
     //また、startTimeMinutes・endTimeMinutesに00を入れる。
-    const { params } = this.props.navigation.state;
-    console.log(this.props.navigation.state.params);
+    const { state } = this.props.navigation.state.params;
+    // console.log(this.props.navigation.state.params);
     try {
-      if (params.id === 'newPlan') {
+      if (state.id === 'newPlan') {
+        const { startTime } = state;
+        const { endTime } = state;
+        const startTimeText = timeTextCreate(state.startTime).split('\n')[1].slice(0, 5);
+        const endTimeText = timeTextCreate(state.endTime).split('\n')[1].slice(0, 5);
         this.setState({
-          startTime: params.startTime,
-          // startTimeMinutes: '00',
-          endTime: params.endTime,
-          // endTimeMinutes: '00',
+          startTime,
+          endTime,
+          startTimeText,
+          endTimeText,
         });
       }
       else {
@@ -244,10 +249,10 @@ class EditScreen extends React.Component {
         viewStack.push(
           <View>
             <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
-              <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
+              <Text style={styles.startTimeText}>開始時刻： 【{state.startTimeText}】</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { this.handleSubmit('end'); }}>
-              <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
+              <Text style={styles.endTimeText}>終了時刻： 【{state.endTimeText}】</Text>
             </TouchableOpacity>
           </View>
         );
@@ -255,8 +260,8 @@ class EditScreen extends React.Component {
       else {
         viewStack.push(
           <View>
-            <Text style={styles.startTimeText}>開始時刻： 【{state.startTime}:{state.startTimeMinutes}】</Text>
-            <Text style={styles.endTimeText}>終了時刻： 【{state.endTime}:{state.endTimeMinutes}】</Text>
+            <Text style={styles.startTimeText}>開始時刻:【{state.startTimeText}】</Text>
+            <Text style={styles.endTimeText}>終了時刻:【{state.endTimeText}】</Text>
           </View>
         );
       }

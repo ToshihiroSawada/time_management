@@ -5,6 +5,8 @@ import { TouchableHighlight } from 'react-native-gesture-handler';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import timeTextCreate from '../function/timeTextCreate';
+
 class StartStop extends React.Component {
   state = {
     timeText: '',
@@ -22,7 +24,7 @@ class StartStop extends React.Component {
   //TouchableOpacity(スタートボタン)をタップした際のメソッド
   async handleSubmit() {
     const date = new Date();
-    const timeText = await this.timeTextCreate(date);
+    const timeText = await timeTextCreate(date);
     console.log(timeText);
     if (this.state.timeState === false) {
       //stateとAsyncStorageに格納する
@@ -38,14 +40,14 @@ class StartStop extends React.Component {
       try {
         //AsyncStorageからデータを削除
         await AsyncStorage.removeItem('@dateString');
-        console.log(this.state);
+        // console.log(this.state);
         this.setState({
           endTime: date,
           timeState: false,
           timeText: 'スタートボタンを\n押してください',
           buttonText: 'スタート',
         });
-        console.log(this.state);
+        // console.log(this.state);
         this.props.navigation.navigate('Edit', { state: this.state }); //受け渡しはできたのでEdit画面の修正に入る
       }
       catch (e) {
@@ -68,7 +70,7 @@ class StartStop extends React.Component {
     let value = '';
     try {
       value = await AsyncStorage.getItem('@dateString');
-      console.log(value);
+      // console.log(value);
       if (value !== null) {
         this.setState({
           timeText: value,
@@ -86,17 +88,6 @@ class StartStop extends React.Component {
     } catch (e) {
       console.log('ERROR:aaa', e);
     }
-  }
-
-  async timeTextCreate(date) {
-    let time = '';
-    let dateString = date;
-    const year = dateString.getFullYear();
-    const month = parseInt(dateString.getMonth(), 10) + 1;
-    const day = dateString.getDay();
-    time = date.toLocaleTimeString('ja');
-    dateString = `${year}/${month}/${day}\n${time}`;
-    return dateString;
   }
 
   render() {
