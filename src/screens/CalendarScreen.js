@@ -18,12 +18,12 @@ class CalendarScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        {/*カレンダーを出力・this.props.navigation.navigate('Results', { day })で日付データ(day)をResults画面に渡す*/}
+        {/*カレンダーを出力・this.props.navigation.navigate('PlansAndResults', { day })で日付データ(day)をPlansAndResults画面に渡す*/}
         <Calendar
           monthFormat="yyyy年 M月"
           onDayPress={(day) => {
-            this.props.navigation.navigate('Results', { day });
-        }}
+            this.props.navigation.navigate('PlansAndResults', { day });
+          }}
         />
         <TouchableOpacity style={styles.button} onPress={() => { this.props.navigation.navigate('StartStop'); }}>
           <Text>スタート・ストップ</Text>

@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Loading from '../components/Loading';
 import Timezone from '../components/Timezone';
 
-export default class ResultsScreen extends React.Component {
+export default class PlansAndResults extends React.Component {
   state = {
     day: this.props.navigation.state.params.day.dateString,
     planData: [],

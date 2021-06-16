@@ -38,7 +38,6 @@ class EditScreen extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.navigation.state);
     //startTime・endTimeどちらかでもundifinedだった場合見栄を考慮し0にする
     if (this.state.startTime === undefined || this.state.endTime === undefined) {
       this.setState({
@@ -50,18 +49,22 @@ class EditScreen extends React.Component {
     //新しく作成する場合の処理(idで判別し、startTime・endTimeにTimeZoneでタップした時間を入れる)
     //また、startTimeMinutes・endTimeMinutesに00を入れる。
     const { state } = this.props.navigation.state.params;
-    // console.log(this.props.navigation.state.params);
     try {
-      if (state.id === 'newPlan') {
+      if (state.id === 'newResult') {
         const { startTime } = state;
+        const convertJPStartTime = timeTextCreate(startTime, 1);
         const { endTime } = state;
-        const startTimeText = timeTextCreate(state.startTime).split('\n')[1].slice(0, 5);
-        const endTimeText = timeTextCreate(state.endTime).split('\n')[1].slice(0, 5);
+        const startTimeText = timeTextCreate(state.startTime).split(' ')[1].slice(0, 5);
+        const endTimeText = timeTextCreate(state.endTime).split(' ')[1].slice(0, 5);
+        const { id } = state;
+        const date = startTimeText[0];
         this.setState({
-          startTime,
+          date,
+          startTime: convertJPStartTime,
           endTime,
           startTimeText,
           endTimeText,
+          id,
         });
       }
       else {
@@ -141,18 +144,22 @@ class EditScreen extends React.Component {
       id = 'results';
     }
     //データ格納に使用する日付データを取得
-    const date = this.props.navigation.state.params[2];
-    const { year } = date;
-    const { month } = date;
-    const { day } = date;
+    // const date = this.props.navigation.state.params[2];
+    const date = new Date(this.state.startTime);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
     const { state } = this;
+    // const { id } = state;
     //DB格納用にデータを編集
-    const addDBStartTime = `${state.startTime}:${state.startTimeMinutes}`;
-    const addDBEndTime = `${state.endTime}:${state.endTimeMinutes}`;
+    const addDBStartTime = state.startTime;
+    const addDBEndTime = state.endTime;
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
+
     //keyが存在しない場合、CloudFirebaseにデータを登録する
-    if (this.state.key === undefined) {
+    if (state.key === '') {
+
       await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`).add({
         startTime: addDBStartTime,
         endTime: addDBEndTime,
@@ -161,7 +168,7 @@ class EditScreen extends React.Component {
         color: state.color,
       })
         .then(() => {
-          this.returnPlan();
+          // this.returnPlan();
           this.props.navigation.goBack();
           this.setState({ isLoading: false });
         })
@@ -269,7 +276,7 @@ class EditScreen extends React.Component {
     catch (err) { console.log(err); }
     return (
       <ScrollView style={styles.container}>
-        { this.state.timeErrorMessage}
+        {this.state.timeErrorMessage}
         {viewStack}
         <DropDownPicker
           containerStyle={styles.dropDownPicker}
@@ -285,7 +292,7 @@ class EditScreen extends React.Component {
           onChangeItem={(item) => { this.setState({ color: item.value }); }}
         />
         <Text style={styles.title}>タイトル</Text>
-        { this.state.titleErrorMessage}
+        {this.state.titleErrorMessage}
         <TextInput
           style={styles.titleText}
           placeholder="タイトル入力"

@@ -14,7 +14,7 @@ class StartStop extends React.Component {
     startTime: '',
     endTime: '',
     buttonText: '',
-    id: 'newPlan',
+    id: 'newResult',
   }
 
   componentDidMount() {
@@ -24,13 +24,13 @@ class StartStop extends React.Component {
   //TouchableOpacity(スタートボタン)をタップした際のメソッド
   async handleSubmit() {
     const date = new Date();
-    const timeText = await timeTextCreate(date);
-    console.log(timeText);
+    const timeText = await timeTextCreate(date, 1);
+    const timeText2Line = timeText;
     if (this.state.timeState === false) {
       //stateとAsyncStorageに格納する
       this.setData(String(date));
       this.setState({
-        timeText,
+        timeText: timeText2Line,
         startTime: date,
         buttonText: 'ストップ',
         timeState: true,
@@ -40,14 +40,12 @@ class StartStop extends React.Component {
       try {
         //AsyncStorageからデータを削除
         await AsyncStorage.removeItem('@dateString');
-        // console.log(this.state);
         this.setState({
           endTime: date,
           timeState: false,
           timeText: 'スタートボタンを\n押してください',
           buttonText: 'スタート',
         });
-        // console.log(this.state);
         this.props.navigation.navigate('Edit', { state: this.state }); //受け渡しはできたのでEdit画面の修正に入る
       }
       catch (e) {
@@ -70,8 +68,8 @@ class StartStop extends React.Component {
     let value = '';
     try {
       value = await AsyncStorage.getItem('@dateString');
-      // console.log(value);
       if (value !== null) {
+        value = await timeTextCreate(value, 1);
         this.setState({
           timeText: value,
           startTime: value,
@@ -97,7 +95,7 @@ class StartStop extends React.Component {
         <TouchableHighlight style={styles.Button} onPress={this.handleSubmit.bind(this)}>
           <Text style={styles.ButtonTitle}>{this.state.buttonText}</Text>
         </TouchableHighlight>
-      </View >
+      </View>
     );
   }
 }
@@ -113,7 +111,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     fontSize: 30,
   },
-  //+ボタンのスタイリング
+  //ボタンのスタイリング
   Button: {
     margin: '50%',
     width: 200,
@@ -129,9 +127,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.01, //影の濃さ（１がMAX）
     elevation: 10, //表示する優先度(高度)を設定する
   },
-  //+ボタンのフォントのスタイリング
+  //ボタンのフォントのスタイリング
   ButtonTitle: {
-    fontSize: 50,
+    fontSize: 40,
   },
 });
 

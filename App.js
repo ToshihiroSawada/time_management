@@ -8,7 +8,7 @@ import { decode, encode } from 'base-64';
 //それぞれの画面をインポート
 import LoginScreen from './src/screens/LoginScreen';
 import CalendarScreen from './src/screens/CalendarScreen';
-import ResultScreen from './src/screens/ResultsScreen';
+import PlansAndResults from './src/screens/PlansAndResults';
 import EditScreen from './src/screens/EditScreen';
 import Signup from './src/screens/SignupScreen';
 import StartStop from './src/screens/StartStop';
@@ -45,8 +45,8 @@ const AppScreen = createStackNavigator({ //createStackNavigatorで画面を作�
   Home: {
     screen: CalendarScreen,
   },
-  Results: {
-    screen: ResultScreen,
+  PlansAndResults: {
+    screen: PlansAndResults,
   },
   Edit: {
     //タイトルヘッダーを変更
