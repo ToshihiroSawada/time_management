@@ -25,12 +25,11 @@ class StartStop extends React.Component {
   async handleSubmit() {
     const date = new Date();
     const timeText = await timeTextCreate(date, 1);
-    const timeText2Line = timeText;
     if (this.state.timeState === false) {
       //stateとAsyncStorageに格納する
       this.setData(String(date));
       this.setState({
-        timeText: timeText2Line,
+        timeText,
         startTime: date,
         buttonText: 'ストップ',
         timeState: true,
@@ -65,22 +64,22 @@ class StartStop extends React.Component {
 
   //AsyncStorageからデータを取り出す
   async getData() {
-    let value = '';
+    let startTime = '';
     try {
-      value = await AsyncStorage.getItem('@dateString');
-      if (value !== null) {
-        value = await timeTextCreate(value, 1);
-        this.setState({
-          timeText: value,
-          startTime: value,
-          timeState: true,
-          buttonText: 'ストップ',
-        });
-      }
-      else {
+      startTime = await AsyncStorage.getItem('@dateString');
+      if (startTime === null) {
         this.setState({
           timeText: 'スタートボタンを\n押してください',
           buttonText: 'スタート',
+        });
+      }
+      else {
+        let startTimeText = await timeTextCreate(startTime, 1);
+        this.setState({
+          timeText: startTimeText,
+          startTime: startTime,
+          timeState: true,
+          buttonText: 'ストップ',
         });
       }
     } catch (e) {
