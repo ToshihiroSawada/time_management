@@ -9,6 +9,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import firebase from 'firebase';
 
+import timestampToDate from '../function/timestampToDate';
+
 class Timezone extends React.Component {
   state = {
     array: [],
@@ -51,13 +53,13 @@ class Timezone extends React.Component {
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
     await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`)
-    .doc(key)
-    .delete()
-    .then(() => {
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .doc(key)
+      .delete()
+      .then(() => {
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     this.viewUpdate();
   }
@@ -69,7 +71,7 @@ class Timezone extends React.Component {
       [
         {
           text: 'いいえ',
-          onPress: () => {},
+          onPress: () => { },
           style: 'cancel'
         },
         {
@@ -96,7 +98,7 @@ class Timezone extends React.Component {
       await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).get().then((querySnapshot) => {
         const planData = [];
         querySnapshot.forEach((doc) => {
-            planData.push({ ...doc.data(), key: doc.id });
+          planData.push({ ...doc.data(), key: doc.id });
         });
         this.setState({ array: planData });
       });
@@ -105,7 +107,7 @@ class Timezone extends React.Component {
       await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/results`).get().then((querySnapshot) => {
         const resultData = [];
         querySnapshot.forEach((doc) => {
-            resultData.push({ ...doc.data(), key: doc.id });
+          resultData.push({ ...doc.data(), key: doc.id });
         });
         this.setState({ array: resultData });
       });
@@ -123,7 +125,7 @@ class Timezone extends React.Component {
       textStack = '〃';
     }
     else {
-        textStack = array[j].title;
+      textStack = array[j].title;
     }
     const { state } = this;
     const { year } = state;
@@ -161,6 +163,7 @@ class Timezone extends React.Component {
   }
 
   render() {
+    console.log(this.state);
     const { array } = this.state;
     const { state } = this;
     const { year } = state;
@@ -183,14 +186,29 @@ class Timezone extends React.Component {
     for (let i = 0; i <= 24; i += 1) {
       let j = 0;
       for (j = 0; j < planCounter; j += 1) {
+
+        //TODO:予定表示が完成したらこのブロックは削除する
+        // if (i === 0) {
+        //   const Timestamp = array[j].startTime;
+        //   const timestampToDate = Timestamp.toDate();
+        //   const dateTimeStringJP = moment(timestampToDate).format('YYYY/MM/DD HH:mm:ss');
+        //   console.log('-----------------', array[j].startTime.seconds, dateTimeStringJP);
+        // }
+
         try {
-          if (array[j].startTime.match(/:/) !== null) {
-            let cacheArray = array[j].startTime.toString().split(':');
+          //TODO: 修正箇所
+          const startTime = timestampToDate(array[j].startTime);
+          const endTime = timestampToDate(array[j].endTime);
+          console.log('dateTime', startTime);
+          if (startTime.match(/:/) !== null) {
+            let cacheArray = startTime.toString().split(' ').split(':');
+            console.log('cacheArray', cacheArray);
             array[j].startTime = cacheArray[0];
             array[j].startTimeMinutes = cacheArray[1];
-            cacheArray = array[j].endTime.toString().split(':');
+            cacheArray = endTime.toString().split(':');
             array[j].endTime = cacheArray[0];
             array[j].endTimeMinutes = cacheArray[1];
+            console.log(array[j]);
           }
           // eslint-disable-next-line eqeqeq
           if (i == array[j].startTime) {
