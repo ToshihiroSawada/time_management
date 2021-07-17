@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 /* eslint-disable class-methods-use-this */
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
@@ -45,7 +46,7 @@ class StartStop extends React.Component {
           timeText: 'スタートボタンを\n押してください',
           buttonText: 'スタート',
         });
-        this.props.navigation.navigate('Edit', { state: this.state }); //受け渡しはできたのでEdit画面の修正に入る
+        this.props.navigation.navigate('Edit', { state: this.state });
       }
       catch (e) {
         console.log(e);
@@ -74,10 +75,10 @@ class StartStop extends React.Component {
         });
       }
       else {
-        let startTimeText = await timeTextCreate(startTime, 1);
+        const startTimeText = await timeTextCreate(startTime, 1);
         this.setState({
           timeText: startTimeText,
-          startTime: startTime,
+          startTime,
           timeState: true,
           buttonText: 'ストップ',
         });

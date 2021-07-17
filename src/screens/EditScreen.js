@@ -68,6 +68,7 @@ class EditScreen extends React.Component {
       }
       else {
         this.setState({
+          //TODO:修正箇所
           id: this.props.navigation.state.params[4],
           key: this.props.navigation.state.params[0].key,
           startTime: this.props.navigation.state.params[0].startTime,
@@ -174,7 +175,7 @@ class EditScreen extends React.Component {
     }
     //keyが存在する場合、CloudFirebaseのデータを更新する
     else {
-      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`).doc(state.key).update({
+      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`).doc(this.state.key).update({
         startTime,
         endTime,
         title,

@@ -58,7 +58,7 @@ class Timezone extends React.Component {
       .then(() => {
       })
       .catch((err) => {
-        console.log(err);
+        console.log('ERRER:', err);
       });
 
     this.viewUpdate();
@@ -163,7 +163,6 @@ class Timezone extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     const { array } = this.state;
     const { state } = this;
     const { year } = state;
@@ -186,30 +185,29 @@ class Timezone extends React.Component {
     for (let i = 0; i <= 24; i += 1) {
       let j = 0;
       for (j = 0; j < planCounter; j += 1) {
-
-        //TODO:予定表示が完成したらこのブロックは削除する
-        // if (i === 0) {
-        //   const Timestamp = array[j].startTime;
-        //   const timestampToDate = Timestamp.toDate();
-        //   const dateTimeStringJP = moment(timestampToDate).format('YYYY/MM/DD HH:mm:ss');
-        //   console.log('-----------------', array[j].startTime.seconds, dateTimeStringJP);
-        // }
-
         try {
-          //TODO: 修正箇所
-          const startTime = timestampToDate(array[j].startTime);
-          const endTime = timestampToDate(array[j].endTime);
-          console.log('dateTime', startTime);
-          if (startTime.match(/:/) !== null) {
-            let cacheArray = startTime.toString().split(' ').split(':');
-            console.log('cacheArray', cacheArray);
-            array[j].startTime = cacheArray[0];
-            array[j].startTimeMinutes = cacheArray[1];
-            cacheArray = endTime.toString().split(':');
-            array[j].endTime = cacheArray[0];
-            array[j].endTimeMinutes = cacheArray[1];
-            console.log(array[j]);
+          let startTime = array[j].startTime;
+          let endTime = array[j].endTime;
+          if (startTime.seconds !== undefined && endTime.seconds !== undefined) {
+            startTime = timestampToDate(startTime.seconds * 1000);
+            endTime = timestampToDate(endTime.seconds * 1000);
           }
+          try {
+            if (startTime.match(/:/) !== null) {
+              let cacheArray = startTime.toString().split(' ');
+              cacheArray = cacheArray[1].split(':');
+              array[j].startTime = cacheArray[0];
+              array[j].startTimeMinutes = cacheArray[1];
+
+              cacheArray = endTime.toString().split(' ');
+              cacheArray = cacheArray[1].split(':');
+              array[j].endTime = cacheArray[0];
+              array[j].endTimeMinutes = cacheArray[1];
+
+              array[j].push(1);
+            }
+          }
+          catch (e) { }
           // eslint-disable-next-line eqeqeq
           if (i == array[j].startTime) {
             key = array[j].key;
