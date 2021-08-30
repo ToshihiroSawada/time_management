@@ -132,7 +132,13 @@ class Timezone extends React.Component {
     const { month } = state;
     const { day } = state;
     //EditScreenへ受け渡すデータをひとまとめにする
-    const cache = [array[j], this.props.navigation.state.params.day.dateString, { year, month, day }, this.returnPlan.bind(this), this.state.id];
+    const cache = {};
+    //TODO:苦し紛れのstate挿入。StartStopとのデータ送信の整合性を取り、stateを外す
+    cache.state = array[j];
+    cache.state.dateString = this.props.navigation.state.params.day.dateString;
+    cache.state.date = { year, month, day };
+    cache.state.id = this.state.id;
+    cache.state.returnPlan = this.returnPlan.bind(this);
     viewStack.push(
       //ロングタップ時の削除に使用するため、PlanのkeyをLongtapひいてはdeletePlanへ渡す。
       // eslint-disable-next-line max-len

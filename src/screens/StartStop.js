@@ -84,7 +84,7 @@ class StartStop extends React.Component {
         });
       }
     } catch (e) {
-      console.log('ERROR:aaa', e);
+      console.log('ERROR:', e);
     }
   }
 

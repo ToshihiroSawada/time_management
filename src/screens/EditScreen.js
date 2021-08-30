@@ -67,22 +67,23 @@ class EditScreen extends React.Component {
         });
       }
       else {
+        const startTimeText = `${state.startTime}:${state.startTimeMinutes}`;
+        const endTimeText = `${state.endTime}:${state.endTimeMinutes}`;
         this.setState({
-          //TODO:修正箇所
-          id: this.props.navigation.state.params[4],
-          key: this.props.navigation.state.params[0].key,
-          startTime: this.props.navigation.state.params[0].startTime,
-          startTimeMinutes: this.props.navigation.state.params[0].startTimeMinutes,
-          endTime: this.props.navigation.state.params[0].endTime,
-          endTimeMinutes: this.props.navigation.state.params[0].endTimeMinutes,
-          title: this.props.navigation.state.params[0].title,
-          value: this.props.navigation.state.params[0].value,
-          color: this.props.navigation.state.params[0].color,
+          id: state.id,
+          key: state.key,
+          startTime: state.startTime,
+          startTimeText,
+          endTime: state.endTime,
+          endTimeText,
+          title: state.title,
+          value: state.value,
+          color: state.color,
         });
       }
     }
     catch (err) {
-      console.log('ERROR:', err);
+      console.log('EditScreen\nERROR:', err);
     }
   }
 
@@ -247,6 +248,7 @@ class EditScreen extends React.Component {
 
   render() {
     const { state } = this;
+    console.log(state);
     const viewStack = [];
     try {
       if (this.props.navigation.state.params[4] === 'Plan') {
