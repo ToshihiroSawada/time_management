@@ -1,10 +1,9 @@
 {
   "expo": {
     "name": "TimeManagement",
-    "slug": "time_management",
-    "privacy": "public",
+    "slug": "hajime_cat-net-time_management",
+    "privacy": "unlisted",
     "platforms": [
-      "ios",
       "android",
       "web"
     ],
@@ -17,13 +16,15 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 10000
     },
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
+    "android": {
+      "package": "net.hajime_cat.app",
+      "versionCode": 1,
+      "permissions": []
     }
   }
 }
