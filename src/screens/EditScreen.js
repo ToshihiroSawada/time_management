@@ -3,7 +3,7 @@
 /* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
-import { StyleSheet, Text, KeyboardAvoidingView, View } from 'react-native';
+import { StyleSheet, Text, KeyboardAvoidingView, View, TouchableHighlightBase } from 'react-native';
 import { TouchableOpacity, TextInput, ScrollView } from 'react-native-gesture-handler';
 import firebase from 'firebase';
 
@@ -15,7 +15,6 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 
 import Loading from '../components/Loading';
-import timeTextCreate from '../function/timeTextCreate';
 
 class EditScreen extends React.Component {
   state = {
@@ -38,49 +37,31 @@ class EditScreen extends React.Component {
   }
 
   componentDidMount() {
-    //startTime・endTimeどちらかでもundifinedだった場合見栄を考慮し0にする
-    if (this.state.startTime === undefined || this.state.endTime === undefined) {
-      this.setState({
-        startTime: 0,
-        endTime: 0,
-      });
-    }
-
     //新しく作成する場合の処理(idで判別し、startTime・endTimeにTimeZoneでタップした時間を入れる)
     //また、startTimeMinutes・endTimeMinutesに00を入れる。
-    const { state } = this.props.navigation.state.params;
     try {
-      if (state.id === 'newResult') {
-        const { startTime } = state;
-        const { endTime } = state;
-        const startTimeText = timeTextCreate(state.startTime).split(' ')[1].slice(0, 5);
-        const endTimeText = timeTextCreate(state.endTime).split(' ')[1].slice(0, 5);
-        const { id } = state;
-        const date = startTimeText[0];
-        this.setState({
-          date,
-          startTime,
-          endTime,
-          startTimeText,
-          endTimeText,
-          id,
-        });
-      }
-      else {
-        const startTimeText = `${state.startTime}:${state.startTimeMinutes}`;
-        const endTimeText = `${state.endTime}:${state.endTimeMinutes}`;
-        this.setState({
-          id: state.id,
-          key: state.key,
-          startTime: state.startTime,
-          startTimeText,
-          endTime: state.endTime,
-          endTimeText,
-          title: state.title,
-          value: state.value,
-          color: state.color,
-        });
-      }
+      const { state } = this.props.navigation;
+      const { key } = state;
+      const { params } = state;
+      const startTime = new Date(params.startTime);
+      const endTime = new Date(params.startTime);
+      const startTimeText = `${startTime.getHours()}:${startTime.getMinutes()}`;
+      const endTimeText = `${endTime.getHours()}:${endTime.getMinutes()}`;
+      const { id } = params;
+      const { title } = params;
+      const { value } = params;
+      const { color } = params;
+      this.setState({
+        startTime,
+        endTime,
+        startTimeText,
+        endTimeText,
+        id,
+        title,
+        key,
+        value,
+        color,
+      });
     }
     catch (err) {
       console.log('EditScreen\nERROR:', err);
@@ -102,9 +83,6 @@ class EditScreen extends React.Component {
 
     //時間の"時間"上2桁だけを抽出。
     let hour = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(11, 13);
-    //時間の"分"だけを抽出。
-    // const minutes = currentDate.toLocaleString({ timeZone: 'Asia/Tokyo' }).substring(14, 16);
-
     //時間が1桁(00〜09)だった場合、見た目を考慮して1桁表示とする
     if (hour < 10) {
       hour = hour.substring(1);
@@ -113,13 +91,11 @@ class EditScreen extends React.Component {
     if (this.state.startOrEnd === 'start') {
       this.setState({
         startTime: hour,
-        // startTimeMinutes: minutes,
       });
     }
     else {
       this.setState({
         endTime: hour,
-        // endTimeMinutes: minutes,
       });
     }
 
@@ -136,30 +112,18 @@ class EditScreen extends React.Component {
   async updatePlan() {
     const returnNum = await this.checkState();
     if (returnNum === 1) { return; }
-    let { id } = this.state;
-    //名前が微妙に違うため、idをDBの名前に変更する
-    if (id === 'Plan') {
-      id = 'plans';
-    }
-    else {
-      id = 'results';
-    }
-    //データ格納に使用する日付データを取得
-    const date = new Date(this.state.startTime);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+    const { id } = this.state;
     const { state } = this;
     //DB格納用にデータを編集
-    this.addDataToFirebase(state.key, state.title, state.startTime, state.endTime, state.value, state.color, year, month, day, id);
+    this.addDataToFirebase(state.key, state.title, state.startTime, state.endTime, state.value, state.color, id);
   }
 
-  async addDataToFirebase(key, title, startTime, endTime, value, color, year, month, day, id) {
+  async addDataToFirebase(key, title, startTime, endTime, value, color, id) {
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
     //keyが存在しない場合、CloudFirebaseにデータを登録する
     if (key === '') {
-      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`).add({
+      await db.collection(`users/${currentUser.uid}/${id}/`).add({
         startTime,
         endTime,
         title,
@@ -176,7 +140,7 @@ class EditScreen extends React.Component {
     }
     //keyが存在する場合、CloudFirebaseのデータを更新する
     else {
-      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`).doc(this.state.key).update({
+      await db.collection(`users/${currentUser.uid}/${id}`).doc(this.state.key).update({
         startTime,
         endTime,
         title,
@@ -248,10 +212,9 @@ class EditScreen extends React.Component {
 
   render() {
     const { state } = this;
-    console.log(state);
     const viewStack = [];
     try {
-      if (this.props.navigation.state.params[4] === 'Plan') {
+      if (this.props.navigation.state.params[4] === 'plans') {
         viewStack.push(
           <View>
             <TouchableOpacity onPress={() => { this.handleSubmit('start'); }}>
@@ -273,6 +236,7 @@ class EditScreen extends React.Component {
       }
     }
     catch (err) { console.log(err); }
+    // console.log(this.state);
     return (
       <ScrollView style={styles.container}>
         {this.state.timeErrorMessage}
@@ -346,7 +310,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0fff0',
   },
   dropDownPicker: {
-    width: 300,
     height: 40,
   },
   title: {
@@ -355,7 +318,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
   },
   titleText: {
-    width: 300,
     height: 40,
     fontSize: 30,
     backgroundColor: '#f0fff0',
@@ -363,7 +325,6 @@ const styles = StyleSheet.create({
   textBox: {
     marginTop: 10,
     fontSize: 20,
-    width: 300,
     height: 200,
     borderBottomWidth: 1,
     backgroundColor: '#f0fff0',

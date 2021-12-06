@@ -31,11 +31,11 @@ export default class PlansAndResults extends React.Component {
         <View style={styles.graph}>
           <View style={styles.graphView}>
             <Text>予定</Text>
-            <Timezone timeItemList={this.state.planData} id="Plan" navigation={this.props.navigation} loadState={[this.loaded.bind(this), this.loading.bind(this)]} />
+            <Timezone timeItemList={this.state.planData} id="plans" navigation={this.props.navigation} loadState={[this.loaded.bind(this), this.loading.bind(this)]} />
           </View>
           <View style={styles.graphView}>
             <Text>結果</Text>
-            <Timezone timeItemList={this.state.resultData} id="Result" navigation={this.props.navigation} loadState={[this.loaded.bind(this), this.loading.bind(this)]} />
+            <Timezone timeItemList={this.state.resultData} id="results" navigation={this.props.navigation} loadState={[this.loaded.bind(this), this.loading.bind(this)]} />
           </View>
         </View>
       </ScrollView>

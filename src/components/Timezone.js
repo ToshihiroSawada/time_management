@@ -20,17 +20,18 @@ class Timezone extends React.Component {
     day: 0,
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const ParamsDay = this.props.navigation.state.params.day;
     const year = ParamsDay.year.toString();
     const month = ParamsDay.month.toString();
     const day = ParamsDay.day.toString();
-    this.setState({
+
+    await this.setState({
       year,
       month,
       day,
     });
-    this.viewUpdate();
+    await this.viewUpdate();
   }
 
   returnPlan() {
@@ -38,21 +39,10 @@ class Timezone extends React.Component {
   }
 
   //CloudFireStoreのデータを削除する処理
-  async deletePlan(key, id) {
-    const { state } = this;
-    const { year } = state;
-    const { month } = state;
-    const { day } = state;
-    //名前が微妙に違うため、idをDBの名前に変更する
-    if (id === 'Plan') {
-      id = 'plans';
-    }
-    else {
-      id = 'results';
-    }
+  async deletePlan(id, key) {
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
-    await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/${id}/`)
+    await db.collection(`users/${currentUser.uid}/${id}`)
       .doc(key)
       .delete()
       .then(() => {
@@ -76,7 +66,7 @@ class Timezone extends React.Component {
         },
         {
           text: 'はい',
-          onPress: () => this.deletePlan(key, id),
+          onPress: () => this.deletePlan(id, key),
         }
       ],
       { cancelable: false }
@@ -84,88 +74,103 @@ class Timezone extends React.Component {
   }
 
   async viewUpdate() {
-    const ParamsDay = this.props.navigation.state.params.day;
-    const year = ParamsDay.year.toString();
-    const month = ParamsDay.month.toString();
-    const day = ParamsDay.day.toString();
+    const { id } = this.state;
+    const { year } = this.state;
+    const { month } = this.state;
+    const { day } = this.state;
     const { currentUser } = firebase.auth();
     const db = firebase.firestore();
-    const { id } = this.state;
     //読み込みが始まった段階でロードのActivityIndicatorを表示する
     const loading = this.props.loadState[1];
     loading();
-    if (id === 'Plan') {
-      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/plans/`).get().then((querySnapshot) => {
-        const planData = [];
-        querySnapshot.forEach((doc) => {
-          planData.push({ ...doc.data(), key: doc.id });
-        });
-        this.setState({ array: planData });
-      });
-    }
-    else {
-      await db.collection(`users/${currentUser.uid}/plans/${year}/${month}/${day}/results`).get().then((querySnapshot) => {
-        const resultData = [];
-        querySnapshot.forEach((doc) => {
-          resultData.push({ ...doc.data(), key: doc.id });
-        });
-        this.setState({ array: resultData });
-      });
-    }
 
+    //読み込み日付とその翌日分のtimestampを取得する。
+    let timestamp = `${year}/${month}/${day} 00:00:00`;
+    const startPoint = new Date(timestampToDate(timestamp));
+    timestamp = `${year}/${month}/${parseInt(day, 10) + 1} 00:00:00`;
+    const endPoint = new Date(timestampToDate(timestamp.toString()));
+    //取得したtimestampを基に24時間分のplansとresultsを取得する(id = plans or results)
+    await db.collection(`users/${currentUser.uid}/${id}/`).where('startTime', '>=', startPoint).where('startTime', '<=', endPoint).get().then((querySnapshot) => {
+      const resultData = [];
+      querySnapshot.forEach((doc) => {
+        resultData.push({ ...doc.data(), key: doc.id });
+      });
+      this.setState({ array: resultData });
+    });
+
+    //取得したデータのstartTimeとendTimeをtimestamp型からDate型へ全て変換する
+    const plans = [];
+    this.state.array.forEach(
+      (i) => {
+        const startTime = timestampToDate(i.startTime.seconds * 1000);
+        const endTime = timestampToDate(i.endTime.seconds * 1000);
+        const { color } = i;
+        const { title } = i;
+        const { value } = i;
+        const { key } = i;
+        plans.push({
+          startTime, endTime, color, title, value, key, id
+        });
+      }
+    );
+    this.setState({ array: plans });
     //読み込みが終わった段階でロードのActivityIndicatorを非表示にする
     const loaded = this.props.loadState[0];
     loaded();
   }
 
   //ViewをPushする処理
-  viewPush(viewStack, key, array, i, j, loopflag) {
-    let textStack;
+  viewPush(object, loopflag) {
+    let textCahe;
     if (loopflag === true) {
-      textStack = '〃';
+      textCahe = '〃';
     }
     else {
-      textStack = array[j].title;
+      textCahe = object.title;
     }
-    const { state } = this;
-    const { year } = state;
-    const { month } = state;
-    const { day } = state;
-    //EditScreenへ受け渡すデータをひとまとめにする
-    const cache = {};
-    //TODO:苦し紛れのstate挿入。StartStopとのデータ送信の整合性を取り、stateを外す
-    cache.state = array[j];
-    cache.state.dateString = this.props.navigation.state.params.day.dateString;
-    cache.state.date = { year, month, day };
-    cache.state.id = this.state.id;
-    cache.state.returnPlan = this.returnPlan.bind(this);
-    viewStack.push(
+    // const cache = {};
+    // cache.dateString = this.props.navigation.state.params.day.dateString;
+    // console.log(cache.dateString);
+    // cache.id = this.state.id;
+    // cache.returnPlan = this.returnPlan.bind(this);
+    const { key } = object;
+    const { color } = object;
+    const startTimeH = new Date(object.startTime).getHours();
+    // if (pushTime !== undefined) {
+    //   startTimeH = pushTime;
+    // }
+    return (
       //ロングタップ時の削除に使用するため、PlanのkeyをLongtapひいてはdeletePlanへ渡す。
-      // eslint-disable-next-line max-len
-      <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('Edit', cache); }} onLongPress={() => { this.Longtap(key, this.state.id); }}>
-        <Text style={styles.timeText} key={key}>{i}:00</Text>
-        <View style={[styles.plan, { backgroundColor: array[j].color }]}>
-          <Text style={styles.matterText}>{textStack}</Text>
+      <TouchableOpacity style={styles.timeView} onPress={() => { this.props.navigation.navigate('Edit', object); }} onLongPress={() => { this.Longtap(this.state.id, key); }}>
+        <Text style={styles.timeText} key={key}>{startTimeH}:00</Text>
+        <View style={[styles.plan, { backgroundColor: color }]}>
+          <Text style={styles.matterText}>{textCahe}</Text>
         </View>
       </TouchableOpacity>
     );
   }
 
+  //TODO: 何故かループさせた時だけ処理が正しく動かないので修正する。
   //同じ予定で何回Pushするのか判定する処理
-  viewCreate(key, viewStack, array, i, j) {
+  viewCreate(object) {
+    const viewArray = [];
     //ループ処理中か判断するフラグ
     let loopflag = true;
-    this.viewPush(viewStack, key, array, i, j);
-    //ArrayのstartTimeとendTimeが一致しない場合の処理(endTimeと一致するまでループ(Planの内容は同じ))
-    if (array[j].startTime !== array[j].endTime) {
-      i += 1;
-      for (; i < array[j].endTime; i += 1) {
-        this.viewPush(viewStack, key, array, i, j, loopflag);
+    viewArray.push(this.viewPush(object, loopflag = false));
+    const start = new Date(object.startTime).getHours();
+    const end = new Date(object.endTime).getHours();
+    let pushTime;
+    // ArrayのstartTimeとendTimeが一致しない場合の処理(endTimeと一致するまでループ(Planの内容は同じ))
+    if (start !== end) {
+      console.log('aaaaaaaaaaaaaaaa');
+      for (pushTime = start + 1; pushTime <= end; pushTime += 1) {
+        console.log(pushTime);
+        viewArray.push(this.viewPush(object, loopflag));
       }
-      this.viewPush(viewStack, key, array, i, j, loopflag);
       loopflag = false;
+      console.log('bbbbbbbbbbbbbb');
     }
-    return [key, i, j];
+    return [viewArray, end];
   }
 
   render() {
@@ -192,31 +197,9 @@ class Timezone extends React.Component {
       let j = 0;
       for (j = 0; j < planCounter; j += 1) {
         try {
-          let startTime = array[j].startTime;
-          let endTime = array[j].endTime;
-          if (startTime.seconds !== undefined && endTime.seconds !== undefined) {
-            startTime = timestampToDate(startTime.seconds * 1000);
-            endTime = timestampToDate(endTime.seconds * 1000);
-          }
-          try {
-            if (startTime.match(/:/) !== null) {
-              let cacheArray = startTime.toString().split(' ');
-              cacheArray = cacheArray[1].split(':');
-              array[j].startTime = cacheArray[0];
-              array[j].startTimeMinutes = cacheArray[1];
-
-              cacheArray = endTime.toString().split(' ');
-              cacheArray = cacheArray[1].split(':');
-              array[j].endTime = cacheArray[0];
-              array[j].endTimeMinutes = cacheArray[1];
-
-              array[j].push(1);
-            }
-          }
-          catch (e) { }
+          const startTime = new Date(state.array[j].startTime);
           // eslint-disable-next-line eqeqeq
-          if (i == array[j].startTime) {
-            key = array[j].key;
+          if (i == startTime.getHours()) {
             planFlag = true;
             break;
           }
@@ -227,7 +210,9 @@ class Timezone extends React.Component {
       }
       //フラグが立った場合Viewをpushする
       if (planFlag === true) {
-        [key, i, j] = this.viewCreate(key, viewStack, array, i, j);
+        let cacheView;
+        [cacheView, i] = this.viewCreate(array[j]);
+        viewStack.push(cacheView);
       }
       //フラグが立たなかった場合、時間のみ記述した空のViewをPushする
       else {
