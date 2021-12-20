@@ -3,7 +3,7 @@
 /* eslint-disable max-len */
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
-import { StyleSheet, Text, KeyboardAvoidingView, View, TouchableHighlightBase } from 'react-native';
+import { StyleSheet, Text, KeyboardAvoidingView, View } from 'react-native';
 import { TouchableOpacity, TextInput, ScrollView } from 'react-native-gesture-handler';
 import firebase from 'firebase';
 
@@ -20,13 +20,13 @@ class EditScreen extends React.Component {
   state = {
     id: '',
     key: '',
-    startTime: '',
-    startTimeText: '',
-    endTime: '',
-    endTimeText: '',
+    startTime: new Date(),
+    // startTimeText: '00:00',
+    endTime: new Date(),
+    // endTimeText: '00:00',
     title: '',
     value: '',
-    color: '',
+    // color: 'white',
     show: false,
     date: new Date(),
     mode: 'time',
@@ -40,12 +40,16 @@ class EditScreen extends React.Component {
     //新しく作成する場合の処理(idで判別し、startTime・endTimeにTimeZoneでタップした時間を入れる)
     //また、startTimeMinutes・endTimeMinutesに00を入れる。
     try {
-      const { state } = this.props.navigation;
-      const { key } = state;
-      const { params } = state;
+      //TODO: データ順序がStartStopとTimezoneで合わない。
+      //const { state } = this.props.navigation.state.params;だとTimezoneから遷移すると正しく表示されず、
+      //const { params } = this.props.navigation.state;だとStartStopから遷移すると正しく表示されない。
+      //データ順序が合うように修正する。
+      const { key } = this.props.navigation;
+      const { params } = this.props.navigation.state;
       const startTime = new Date(params.startTime);
       const endTime = new Date(params.startTime);
       const startTimeText = `${startTime.getHours()}:${startTime.getMinutes()}`;
+      // console.log(startTime, startTimeText);
       const endTimeText = `${endTime.getHours()}:${endTime.getMinutes()}`;
       const { id } = params;
       const { title } = params;
@@ -66,6 +70,7 @@ class EditScreen extends React.Component {
     catch (err) {
       console.log('EditScreen\nERROR:', err);
     }
+    console.log(this.state);
   }
 
   //開始時刻と終了時刻をタップした際にTimePickerを表示する
@@ -159,7 +164,7 @@ class EditScreen extends React.Component {
   }
 
   //state内のundifined等を解決するメソッド
-  checkState() {
+  async checkState() {
     const { state } = this;
     const errorMessage = [];
     //ローディング画面を起動
@@ -213,6 +218,8 @@ class EditScreen extends React.Component {
   render() {
     const { state } = this;
     const viewStack = [];
+    console.log('1111111111111111111');
+    console.log('params', this.props);
     try {
       if (this.props.navigation.state.params[4] === 'plans') {
         viewStack.push(
@@ -236,7 +243,7 @@ class EditScreen extends React.Component {
       }
     }
     catch (err) { console.log(err); }
-    // console.log(this.state);
+    console.log('2222222222222222');
     return (
       <ScrollView style={styles.container}>
         {this.state.timeErrorMessage}

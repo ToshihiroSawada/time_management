@@ -46,7 +46,7 @@ class StartStop extends React.Component {
           timeText: 'スタートボタンを\n押してください',
           buttonText: 'スタート',
         });
-        this.props.navigation.navigate('Edit', { state: this.state });
+        this.props.navigation.navigate('Edit', this.state);
       }
       catch (e) {
         console.log(e);
